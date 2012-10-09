@@ -1,0 +1,16 @@
+require "conjure"
+require "optparse"
+
+option_parser = OptionParser.new do |parser|
+  parser.banner = "Usage: conjure COMMAND SOURCE_TREE"
+  parser.on("-h", "--help", "Show this message") { puts parser }
+  parser.on("--version", "Show version information") { puts "Conjure #{Conjure::VERSION}" }
+end
+
+begin
+  options = option_parser.parse ARGV.any? ? ARGV : ["-h"]
+rescue OptionParser::InvalidOption => e
+  puts e
+  puts option_parser
+  exit 1
+end
