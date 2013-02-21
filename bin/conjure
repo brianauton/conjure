@@ -1,16 +1,13 @@
+#!/usr/bin/env ruby
 require "conjure"
-require "optparse"
+require "thor"
 
-option_parser = OptionParser.new do |parser|
-  parser.banner = "Usage: conjure COMMAND SOURCE_TREE"
-  parser.on("-h", "--help", "Show this message") { puts parser }
-  parser.on("--version", "Show version information") { puts "Conjure #{Conjure::VERSION}" }
+class ConjureCommand < Thor
+  desc "deploy", "Deploys the app"
+  def deploy
+    puts "deploying"
+  end
+  default_task :deploy
 end
 
-begin
-  options = option_parser.parse ARGV.any? ? ARGV : ["-h"]
-rescue OptionParser::InvalidOption => e
-  puts e
-  puts option_parser
-  exit 1
-end
+ConjureCommand.start

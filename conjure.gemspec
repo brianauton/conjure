@@ -12,5 +12,6 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.require_path = "lib"
   s.executables = ["conjure"]
+  s.add_dependency "thor"
 end
 

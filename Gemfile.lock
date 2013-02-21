@@ -2,13 +2,16 @@ PATH
   remote: .
   specs:
     conjure (0.0.0)
+      thor
 
 GEM
   remote: http://rubygems.org/
   specs:
+    thor (0.17.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   conjure!
+  thor
