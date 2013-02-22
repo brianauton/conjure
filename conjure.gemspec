@@ -13,5 +13,6 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.executables = ["conjure"]
   s.add_dependency "thor"
+  s.add_dependency "vagrant"
 end
 

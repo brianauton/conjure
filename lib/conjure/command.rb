@@ -3,6 +3,7 @@ module Conjure
     desc "deploy", "Deploys the app"
     def deploy
       puts "deploying..."
+      Instance.new
     end
     default_task :deploy
   end
