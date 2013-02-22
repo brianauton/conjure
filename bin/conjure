@@ -2,12 +2,4 @@
 require "conjure"
 require "thor"
 
-class ConjureCommand < Thor
-  desc "deploy", "Deploys the app"
-  def deploy
-    puts "deploying"
-  end
-  default_task :deploy
-end
-
-ConjureCommand.start
+Conjure::Command.start
