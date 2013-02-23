@@ -3,7 +3,8 @@ require "vagrant"
 module Conjure
   class Instance
     def initialize
-      @vagrant = Vagrant::Environment.new
+      config_path = File.expand_path "../../../config", __FILE__
+      @vagrant = Vagrant::Environment.new :cwd => config_path
       install_base_image
       puts "Initialized."
     end
