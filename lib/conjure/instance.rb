@@ -25,11 +25,22 @@ module Conjure
       end
     end
 
+    def ssh_address
+      info = @vm.ssh.info
+      "#{info[:username]}@#{info[:host]}"
+    end
+
+    def ssh_options
+      info = @vm.ssh.info
+      "-p #{info[:port]} -i #{info[:private_key_path]}"
+    end
+
+    def remote_command_output(command)
+      `ssh #{ssh_address} #{ssh_options} '#{command}'`
+    end
+
     def issue_test_command
-      puts "Sending the VM a command..."
-      @vm.channel.execute "uname -mrs" do |device, data|
-        puts "OS info reported by the VM: #{data}"
-      end
+      puts "OS info reported by the VM: #{remote_command_output 'uname -mrs'}"
     end
   end
 end
