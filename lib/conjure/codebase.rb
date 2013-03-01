@@ -1,7 +1,7 @@
 module Conjure
   class Codebase
-    def initialize
-      @source_path = Dir.pwd
+    def initialize(source_path)
+      @source_path = source_path
     end
 
     def copy_to(instance, dest_path)
