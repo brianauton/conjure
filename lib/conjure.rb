@@ -4,5 +4,6 @@ module Conjure
   autoload :Command, "conjure/command"
   autoload :Instance, "conjure/instance"
   autoload :Codebase, "conjure/codebase"
+  autoload :Service, "conjure/service"
 
 end

@@ -41,6 +41,7 @@ module Conjure
     end
 
     def remote_command_output(command)
+      command.gsub! "'", "'\\\\''"
       `ssh #{ssh_address} #{ssh_options} '#{command}'`
     end
 
