@@ -28,6 +28,7 @@ module Conjure
       end
 
       def start
+        @instance.start
         install unless installed?
         puts "Starting rails server..."
         if shell("rails server -d").include? "application starting"
