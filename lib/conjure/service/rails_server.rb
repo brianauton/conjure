@@ -1,9 +1,10 @@
 module Conjure
   module Service
     class RailsServer
-      def initialize(instance)
+      def initialize(source_tree, instance)
         @working_dir = "codebase"
         @instance = instance
+        @source_tree = source_tree
       end
 
       def installed?
@@ -29,6 +30,7 @@ module Conjure
 
       def start
         @instance.start
+        @source_tree.start
         install unless installed?
         puts "Starting rails server..."
         if shell("rails server -d").include? "application starting"

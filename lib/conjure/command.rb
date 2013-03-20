@@ -3,9 +3,8 @@ module Conjure
     desc "deploy", "Deploys the app"
     def deploy(source_path = Dir.pwd)
       instance = Service::MachineInstance.new
-      codebase = Codebase.new source_path
-      server = Service::RailsServer.new instance
-      codebase.deploy_to instance
+      source_tree = Service::SourceTree.new source_path, instance
+      server = Service::RailsServer.new source_tree, instance
       server.start
     end
     default_task :deploy
