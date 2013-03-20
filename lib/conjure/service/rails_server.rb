@@ -1,12 +1,16 @@
 module Conjure
   module Service
-    class Rails
-      def initialize
+    class RailsServer
+      def initialize(instance)
         @working_dir = "codebase"
+        @instance = instance
       end
 
-      def install_to(instance)
-        @instance = instance
+      def installed?
+        shell("bundle check").include? "dependencies are satisfied"
+      end
+
+      def install
         puts "Installing additional system packages..."
         shell "sudo apt-get -y install curl libyaml-dev build-essential libsqlite3-dev nodejs"
 
@@ -23,7 +27,8 @@ module Conjure
         shell "bundle"
       end
 
-      def start_server
+      def start
+        install unless installed?
         puts "Starting rails server..."
         if shell("rails server -d").include? "application starting"
           puts "The app is running at http://localhost:4000/"

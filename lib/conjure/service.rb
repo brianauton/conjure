@@ -1,5 +1,5 @@
 module Conjure
   module Service
-    autoload :Rails, "conjure/service/rails"
+    autoload :RailsServer, "conjure/service/rails_server"
   end
 end

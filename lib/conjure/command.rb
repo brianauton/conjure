@@ -4,10 +4,9 @@ module Conjure
     def deploy(source_path = Dir.pwd)
       instance = Instance.new
       codebase = Codebase.new source_path
-      rails = Service::Rails.new
+      server = Service::RailsServer.new instance
       codebase.deploy_to instance
-      rails.install_to instance
-      rails.start_server
+      server.start
     end
     default_task :deploy
   end
