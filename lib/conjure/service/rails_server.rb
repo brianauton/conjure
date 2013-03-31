@@ -7,6 +7,10 @@ module Conjure
         @source_tree = source_tree
       end
 
+      def dependencies
+        [@instance, @source_tree]
+      end
+
       def installed?
         shell("bundle check").include? "dependencies are satisfied"
       end
@@ -29,8 +33,7 @@ module Conjure
       end
 
       def start
-        @instance.start
-        @source_tree.start
+        dependencies.each &:start
         install unless installed?
         puts "Starting rails server..."
         if shell("rails server -d").include? "application starting"
