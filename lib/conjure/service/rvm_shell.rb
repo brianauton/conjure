@@ -7,6 +7,10 @@ module Conjure
         @gemset = gemset
       end
 
+      def dependences
+        [@instance]
+      end
+
       def start
         shell "sudo apt-get -y install curl libyaml-dev build-essential libsqlite3-dev nodejs"
         shell "curl -L https://get.rvm.io | bash -s -- --ignore-dotfiles"

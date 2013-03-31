@@ -17,8 +17,6 @@ module Conjure
       end
 
       def start
-        dependencies.each &:start
-        return if started?
         puts "Installing gems..."
         execute "cd codebase; bundle"
         puts "Starting rails server..."
