@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RailsServer
+    class RailsServer < Basic
       def initialize(source_tree, instance)
         @working_dir = "codebase"
         @instance = instance

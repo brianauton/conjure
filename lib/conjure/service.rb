@@ -6,4 +6,22 @@ module Conjure
     autoload :MachineInstance, "conjure/service/machine_instance"
     autoload :SourceTree, "conjure/service/source_tree"
   end
+
+  class Basic
+    def dependencies
+      []
+    end
+
+    def started?
+      false
+    end
+
+    def start
+    end
+
+    def deploy
+      dependencies.each &:start
+      start unless started?
+    end
+  end
 end

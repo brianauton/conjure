@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RailsApplication
+    class RailsApplication < Basic
       def initialize(source_path)
         source_path = source_path
         instance = Service::MachineInstance.new

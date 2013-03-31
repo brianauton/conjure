@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RvmShell
+    class RvmShell < Basic
       def initialize(machine_instance, ruby_version, gemset)
         @instance = machine_instance
         @ruby_version = ruby_version

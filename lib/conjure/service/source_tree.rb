@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class SourceTree
+    class SourceTree < Basic
       def initialize(source_path, machine_instance)
         @source_path = source_path
         @instance = machine_instance
