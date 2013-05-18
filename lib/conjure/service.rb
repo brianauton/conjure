@@ -19,9 +19,13 @@ module Conjure
     def start
     end
 
-    def deploy
+    def save
       dependencies.each &:start
       start unless started?
+    end
+
+    def self.create(*args)
+      new(*args).save
     end
   end
 end
