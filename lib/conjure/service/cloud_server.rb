@@ -1,0 +1,95 @@
+module Conjure
+  module Service
+    class CloudServer < Basic
+      require "fog"
+
+      def initialize(name, config = {})
+        @name = name
+        @config = config
+      end
+
+      def run(command)
+        set_fog_credentials
+        server.ssh(command).first
+      end
+
+      def server
+        @server ||= existing_server
+        @server ||= new_server
+        @server.wait_for { ready? }
+        @server
+      end
+
+      def ip_address
+        "???"
+      end
+
+      def existing_server
+        server = connection.servers.find{|s| s.name == @name }
+        puts " [cloud] Using existing server #{@name}" if server
+        server
+      end
+
+      def new_server
+        puts " [cloud] Launching new server #{@name}"
+        connection.servers.bootstrap bootstrap_options.merge(fog_credentials)
+      end
+
+      def connection
+        @connection ||= Fog::Compute.new compute_options
+      end
+
+      def bootstrap_options
+        {
+          name: @name,
+          flavor_id: flavor_id,
+          region_id: region_id,
+          image_id: image_id,
+        }
+      end
+
+      def compute_options
+        {
+          provider: :digitalocean,
+          digitalocean_api_key: config.digitalocean_api_key,
+          digitalocean_client_id: config.digitalocean_client_id,
+        }
+      end
+
+      def flavor_id
+        @flavor_id ||= connection.flavors.find{|f| f.name == "512MB"}.id
+      end
+
+      def region_id
+        @region_id ||= connection.regions.find{|r| r.name == config.digitalocean_region}.id
+      end
+
+      def image_id
+        @image_id ||= connection.images.find{|r| r.name == "Ubuntu 13.04 x64"}.id
+      end
+
+      def config
+        @config
+      end
+
+      def set_fog_credentials
+        Fog.credentials.merge! fog_credentials
+      end
+
+      def private_key_file
+        Pathname.new(config.config_path).join config.private_key_file
+      end
+
+      def public_key_file
+        Pathname.new(config.config_path).join config.public_key_file
+      end
+
+      def fog_credentials
+        {
+          private_key_path: private_key_file,
+          public_key_path: public_key_file,
+        }
+      end
+    end
+  end
+end
