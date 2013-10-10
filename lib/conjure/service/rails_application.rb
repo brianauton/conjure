@@ -1,15 +1,15 @@
 module Conjure
   module Service
     class RailsApplication < Basic
-      def initialize(source_path)
-        source_path = source_path
-        @instance = Service::MachineInstance.new
-        @source_tree = Service::SourceTree.new source_path, @instance
-        @server = Service::RailsServer.new @source_tree, @instance
-      end
-
-      def dependencies
-        [@instance, @source_tree, @server]
+      def initialize(github_url, name = "myapp", environment = "production", config = {})
+        @name = name
+        @environment = environment
+        docker = Service::DockerHost.create "#{name}-#{environment}", config
+        postgres = Service::PostgresServer.create docker
+        postgres.run
+        rails = Service::RailsServer.create docker, github_url, name, postgres.ip_address, environment
+        rails.run
+        puts "Application deployed to #{docker.ip_address}"
       end
     end
   end
