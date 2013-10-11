@@ -23,6 +23,10 @@ module Conjure
           f.write @container.command("/usr/lib/postgresql/9.2/bin/pg_dump -U root -h #{@server_ip} #{@db_name}")
         end
       end
+
+      def import(file)
+        @container.command "/usr/lib/postgresql/9.2/bin/psql -U root -h #{@server_ip} -d #{@db_name} -f /files/#{File.basename file}", files: [file]
+      end
     end
   end
 end

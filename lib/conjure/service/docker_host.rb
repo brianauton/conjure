@@ -135,10 +135,17 @@ module Conjure
         raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
       end
 
-      def command(command)
+      def command(command, options = {})
         build
         puts "[docker] Executing #{@label} image"
-        @host.command "run #{@label} #{command}"
+        file_options = options[:files] ? "-v /files:/files" : ""
+        @host.command "run #{file_options} #{@label} #{command}", files: files_hash(options[:files])
+      end
+
+      def files_hash(files_array)
+        files_array.to_a.inject({}) do |hash, local_file|
+          hash.merge local_file => "/files/#{File.basename local_file}"
+        end
       end
 
       def shell_command(command)
