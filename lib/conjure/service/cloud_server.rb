@@ -34,7 +34,7 @@ module Conjure
       end
 
       def ip_address
-        "???"
+        @server.public_ip_address
       end
 
       def existing_server
