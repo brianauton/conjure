@@ -14,8 +14,8 @@ module Conjure
             "echo 'host all all 0.0.0.0/0 trust' >>/etc/postgresql/9.2/main/pg_hba.conf",
             "echo \"listen_addresses='*'\" >>/etc/postgresql/9.2/main/postgresql.conf",
           ],
-          daemon_command: "su postgres -c '/usr/lib/postgresql/9.2/bin/postgres -D /var/lib/postgresql/9.2/main -c config_file=/etc/postgresql/9.2/main/postgresql.conf'",
-          volumes: ["/var/lib/pgsql/data"],
+          daemon_command: "su postgres -c '/usr/lib/postgresql/9.2/bin/postgres -c config_file=/etc/postgresql/9.2/main/postgresql.conf'",
+          volumes: ["/var/lib/postgresql/9.2/main"],
         )
       end
 

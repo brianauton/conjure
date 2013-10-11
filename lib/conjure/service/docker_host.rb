@@ -45,8 +45,9 @@ module Conjure
         full_command = "#{docker_path} #{command}"
         full_command = "nohup #{full_command}" if options[:nohup]
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
+        puts "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
         puts "   [ssh] #{full_command}" if VERBOSE
-        result = server.run full_command
+        result = server.run full_command, files: options[:files]
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
       end
@@ -94,8 +95,7 @@ module Conjure
 
       def run
         unless id
-          puts "[docker] Building #{@label} image"
-          raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+          build
           puts "[docker] Starting #{@label} image"
           container_id = @host.command("run -d #{@label}").strip
           if(!id)
@@ -126,8 +126,26 @@ module Conjure
         lines += @setup_commands.map{|c| "RUN #{c}"}
         lines << "EXPOSE #{@ports.map{|p| "#{p}:#{p}"}.join ' '}" if @ports.to_a.any?
         lines << "VOLUME #{@volumes.inspect}" if @volumes.to_a.any?
-        lines << "ENTRYPOINT #{@daemon_command}"
+        lines << "ENTRYPOINT #{@daemon_command}" if @daemon_command
         lines.join "\n"
+      end
+
+      def build
+        puts "[docker] Building #{@label} image"
+        raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+      end
+
+      def command(command, options = {})
+        build
+        puts "[docker] Executing #{@label} image"
+        file_options = options[:files] ? "-v /files:/files" : ""
+        @host.command "run #{file_options} #{@label} #{command}", files: files_hash(options[:files])
+      end
+
+      def files_hash(files_array)
+        files_array.to_a.inject({}) do |hash, local_file|
+          hash.merge local_file => "/files/#{File.basename local_file}"
+        end
       end
 
       def shell_command(command)
@@ -145,6 +163,7 @@ module Conjure
       end
 
       def status
+        require "json"
         JSON.parse(@host.command "inspect #{id}").first
       end
     end
