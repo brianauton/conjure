@@ -1,10 +1,10 @@
 module Conjure
   class Command < Thor
     desc "deploy", "Deploys the app"
-    def deploy(source_path = Dir.pwd)
-      github_url = git_origin_url source_path
+    def deploy
+      Service::RailsApplication.create github_url, app_name, "production", config(Dir.pwd)
+      github_url = git_origin_url Dir.pwd
       app_name = name_from_github_url github_url
-      Service::RailsApplication.create github_url, app_name, "production", config(source_path)
     end
     default_task :help
 
