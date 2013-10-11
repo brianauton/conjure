@@ -3,9 +3,16 @@ module Conjure
     desc "deploy", "Deploys the app"
     def deploy
       Service::RailsApplication.create github_url, app_name, "production", config(Dir.pwd)
-      github_url = git_origin_url Dir.pwd
-      app_name = name_from_github_url github_url
     end
+
+    desc "export FILE", "Exports the production database to a postgres SQL dump"
+    def export(file)
+      environment = "production"
+      host = Service::DockerHost.create "#{app_name}-#{environment}", config(Dir.pwd)
+      Service::PostgresClient.create(host, "#{app_name}_#{environment}").export file
+      puts "[export] #{File.size file} bytes exported to #{file}"
+    end
+
     default_task :help
 
     private
@@ -16,6 +23,14 @@ module Conjure
       data = YAML.load_file config_path
       data["config_path"] = File.dirname config_path
       OpenStruct.new data
+    end
+
+    def app_name
+      name_from_github_url github_url
+    end
+
+    def github_url
+      git_origin_url Dir.pwd
     end
 
     def git_origin_url(source_path)
