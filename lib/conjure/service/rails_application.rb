@@ -9,7 +9,7 @@ module Conjure
         postgres.run
         rails = Service::RailsServer.create docker, github_url, name, postgres.ip_address, environment
         rails.run
-        puts "Application deployed to #{docker.ip_address}"
+        puts "[deploy] Application deployed to #{docker.ip_address}"
       end
     end
   end
