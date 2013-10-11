@@ -8,9 +8,22 @@ module Conjure
         @config = config
       end
 
-      def run(command)
+      def run(command, options = {})
         set_fog_credentials
-        server.ssh(command).first
+        upload_files options[:files].to_a
+        result = server.ssh(command).first
+        remove_files options[:files].to_a
+        result
+      end
+
+      def upload_files(files)
+        dir_names = files.map{|local_path, remote_path| File.dirname remote_path}.uniq
+        server.ssh "mkdir -p #{dir_names.join ' '}" if dir_names.any?
+        files.each{|local_path, remote_path| server.scp local_path, remote_path}
+      end
+
+      def remove_files(files)
+        files.each{|local_path, remote_path| server.ssh "rm -f #{remote_path}"}
       end
 
       def server

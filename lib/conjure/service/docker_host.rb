@@ -45,8 +45,9 @@ module Conjure
         full_command = "#{docker_path} #{command}"
         full_command = "nohup #{full_command}" if options[:nohup]
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
+        puts "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
         puts "   [ssh] #{full_command}" if VERBOSE
-        result = server.run full_command
+        result = server.run full_command, files: options[:files]
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
       end
