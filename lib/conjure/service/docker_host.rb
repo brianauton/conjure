@@ -94,8 +94,7 @@ module Conjure
 
       def run
         unless id
-          puts "[docker] Building #{@label} image"
-          raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+          build
           puts "[docker] Starting #{@label} image"
           container_id = @host.command("run -d #{@label}").strip
           if(!id)
@@ -126,8 +125,19 @@ module Conjure
         lines += @setup_commands.map{|c| "RUN #{c}"}
         lines << "EXPOSE #{@ports.map{|p| "#{p}:#{p}"}.join ' '}" if @ports.to_a.any?
         lines << "VOLUME #{@volumes.inspect}" if @volumes.to_a.any?
-        lines << "ENTRYPOINT #{@daemon_command}"
+        lines << "ENTRYPOINT #{@daemon_command}" if @daemon_command
         lines.join "\n"
+      end
+
+      def build
+        puts "[docker] Building #{@label} image"
+        raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+      end
+
+      def command(command)
+        build
+        puts "[docker] Executing #{@label} image"
+        @host.command "run #{@label} #{command}"
       end
 
       def shell_command(command)
@@ -145,6 +155,7 @@ module Conjure
       end
 
       def status
+        require "json"
         JSON.parse(@host.command "inspect #{id}").first
       end
     end
