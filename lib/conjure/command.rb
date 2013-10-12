@@ -1,3 +1,5 @@
+require "thor"
+
 module Conjure
   class Command < Thor
     desc "deploy", "Deploys the app"
