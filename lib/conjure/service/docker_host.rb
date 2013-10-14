@@ -52,6 +52,10 @@ module Conjure
         result.stdout
       end
 
+      def clean_stopped_processes
+        command "rm `#{docker_path} ps -a -q`"
+      end
+
       def shell_escape(text)
         text.gsub "'", "'\"'\"'"
       end
@@ -133,6 +137,7 @@ module Conjure
       def build
         puts "[docker] Building #{@label} image"
         raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+        @host.clean_stopped_processes
       end
 
       def command(command, options = {})
