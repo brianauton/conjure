@@ -17,5 +17,6 @@ Gem::Specification.new do |s|
   s.add_dependency "thor"
   s.add_dependency "vagrant"
   s.add_development_dependency "minitest"
+  s.add_development_dependency "rake"
 end
 
