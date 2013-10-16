@@ -4,24 +4,26 @@ module Conjure
   class Command < Thor
     desc "deploy", "Deploys the app"
     def deploy
-      Service::RailsApplication.create github_url, app_name, rails_environment, config(Dir.pwd)
+      application.deploy
     end
 
     desc "import FILE", "Imports the production database from a postgres SQL dump"
     def import(file)
-      Service::PostgresClient.create(docker_host, "#{app_name}_#{rails_environment}").import file
-      puts "[export] #{File.size file} bytes imported from #{file}"
+      application.database_client.import file
     end
 
     desc "export FILE", "Exports the production database to a postgres SQL dump"
     def export(file)
-      Service::PostgresClient.create(docker_host, "#{app_name}_#{rails_environment}").export file
-      puts "[export] #{File.size file} bytes exported to #{file}"
+      application.database_client.export file
     end
 
     default_task :help
 
     private
+
+    def application
+      Service::RailsApplication.create github_url, app_name, rails_environment, config(Dir.pwd)
+    end
 
     def rails_environment
       "production"

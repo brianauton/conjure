@@ -22,10 +22,12 @@ module Conjure
         File.open file, "w" do |f|
           f.write @container.command("/usr/lib/postgresql/9.2/bin/pg_dump -U root -h #{@server_ip} #{@db_name}")
         end
+        puts "[export] #{File.size file} bytes exported to #{file}"
       end
 
       def import(file)
         @container.command "/usr/lib/postgresql/9.2/bin/psql -U root -h #{@server_ip} -d #{@db_name} -f /files/#{File.basename file}", files: [file]
+        puts "[import] #{File.size file} bytes imported from #{file}"
       end
     end
   end
