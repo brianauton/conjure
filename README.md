@@ -1,5 +1,6 @@
 ## Conjure
 [![Gem Version](https://badge.fury.io/rb/conjure.png)](http://badge.fury.io/rb/conjure)
+[![Build Status](https://travis-ci.org/brianauton/conjure.png?branch=master)](https://travis-ci.org/brianauton/conjure)
 [![Code Climate](https://codeclimate.com/github/brianauton/conjure.png)](https://codeclimate.com/github/brianauton/conjure)
 
 Magically powerful deployment for Rails applications.
