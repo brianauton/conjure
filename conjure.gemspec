@@ -16,5 +16,6 @@ Gem::Specification.new do |s|
   s.add_dependency "fog", ">= 1.15.0"
   s.add_dependency "thor"
   s.add_dependency "vagrant"
+  s.add_development_dependency "minitest"
 end
 
