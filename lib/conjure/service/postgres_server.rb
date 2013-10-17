@@ -2,7 +2,7 @@ module Conjure
   module Service
     class PostgresServer < Basic
       def initialize(host)
-        @container = host.containers.create(
+        @image = host.images.create(
           label: "postgres",
           base_image: "ubuntu",
           setup_commands: [
@@ -20,11 +20,11 @@ module Conjure
       end
 
       def run
-        @container.run
+        @image.run
       end
 
       def ip_address
-        @container.ip_address
+        @image.ip_address
       end
     end
   end

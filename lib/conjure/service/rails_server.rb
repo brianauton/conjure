@@ -4,7 +4,7 @@ module Conjure
       def initialize(host, app_name, rails_environment)
         @app_name = app_name
         ruby_version = file_contents("../.ruby-version").strip
-        @container = host.containers.create(
+        @image = host.images.create(
           label: "rails",
           base_image: "ubuntu",
           setup_commands: [
@@ -33,10 +33,10 @@ module Conjure
 
       def run
         puts "[ rails] Installing gems"
-        @container.command "cd #{@app_name}; bundle --deployment"
+        @image.command "cd #{@app_name}; bundle --deployment"
         puts "[ rails] Setting up the database"
-        @container.command "cd #{@app_name}; bundle exec rake db:setup"
-        @container.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
+        @image.command "cd #{@app_name}; bundle exec rake db:setup"
+        @image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
       def apt_packages_required_for_gems

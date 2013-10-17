@@ -61,22 +61,22 @@ module Conjure
         text.gsub "'", "'\"'\"'"
       end
 
-      def containers
-        ContainerSet.new self
+      def images
+        ImageSet.new self
       end
     end
 
-    class ContainerSet
+    class ImageSet
       def initialize(host)
         @host = host
       end
 
       def create(options)
-        Container.new @host, options
+        Image.new @host, options
       end
     end
 
-    class Container
+    class Image
       def initialize(host, options)
         @host = host
         @label = options[:label]

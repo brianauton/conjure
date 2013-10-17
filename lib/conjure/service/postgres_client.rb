@@ -6,7 +6,7 @@ module Conjure
         server.run
         @server_ip = server.ip_address
         @db_name = db_name
-        @container = host.containers.create(
+        @image = host.images.create(
           label: "pgclient",
           base_image: "ubuntu",
           setup_commands: [
@@ -20,13 +20,13 @@ module Conjure
 
       def export(file)
         File.open file, "w" do |f|
-          f.write @container.command("/usr/lib/postgresql/9.2/bin/pg_dump -U root -h #{@server_ip} #{@db_name}")
+          f.write @image.command("/usr/lib/postgresql/9.2/bin/pg_dump -U root -h #{@server_ip} #{@db_name}")
         end
         puts "[export] #{File.size file} bytes exported to #{file}"
       end
 
       def import(file)
-        @container.command "/usr/lib/postgresql/9.2/bin/psql -U root -h #{@server_ip} -d #{@db_name} -f /files/#{File.basename file}", files: [file]
+        @image.command "/usr/lib/postgresql/9.2/bin/psql -U root -h #{@server_ip} -d #{@db_name} -f /files/#{File.basename file}", files: [file]
         puts "[import] #{File.size file} bytes imported from #{file}"
       end
     end

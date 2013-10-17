@@ -8,7 +8,7 @@ module Conjure
         @rails_environment = rails_environment
         github_private_key = file_contents(Conjure.config.private_key_file).gsub("\n", "\\n")
         github_public_key = file_contents(Conjure.config.public_key_file).gsub("\n", "\\n")
-        @container = host.containers.create(
+        @image = host.images.create(
           label: "codebase",
           base_image: "ubuntu",
           setup_commands: [
@@ -37,9 +37,9 @@ module Conjure
 
       def install
         puts "[  repo] Checking out code from git"
-        @container.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
+        @image.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
         puts "[  repo] Generating database.yml"
-        @container.command "echo '#{database_yml}' >/#{@app_name}/config/database.yml"
+        @image.command "echo '#{database_yml}' >/#{@app_name}/config/database.yml"
       end
     end
   end
