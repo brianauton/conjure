@@ -1,7 +1,7 @@
 module Conjure
   module Service
     class RailsCodebase < Basic
-      def initialize(host, github_url, app_name, database_ip_address, rails_environment = "production")
+      def initialize(host, github_url, app_name, database_ip_address, rails_environment)
         @github_url = github_url
         @app_name = app_name
         @database_ip_address = database_ip_address
@@ -23,13 +23,13 @@ module Conjure
         )
       end
 
-      def database_yml(database_ip_address, app_name, rails_environment)
+      def database_yml
         {
-          rails_environment => {
+          @rails_environment => {
             "adapter" => "postgresql",
-            "database" => "#{app_name}_#{rails_environment}",
+            "database" => "#{@app_name}_#{@rails_environment}",
             "encoding" => "utf8",
-            "host" => database_ip_address,
+            "host" => @database_ip_address,
             "username" => "root",
             "template" => "template0",
           }
@@ -40,11 +40,7 @@ module Conjure
         puts "[  repo] Checking out code from git"
         @container.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
         puts "[  repo] Generating database.yml"
-        @container.command "echo '#{database_yml @database_ip_address, @app_name, @rails_environment}' >/#{@app_name}/config/database.yml"
-      end
-
-      def container_id
-        @container.id
+        @container.command "echo '#{database_yml}' >/#{@app_name}/config/database.yml"
       end
     end
   end
