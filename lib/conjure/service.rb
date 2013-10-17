@@ -13,5 +13,10 @@ module Conjure
     def self.create(*args)
       new(*args)
     end
+
+    def file_contents(config, file_path)
+      file_path = File.join config.config_path, file_path
+      `cat #{file_path}`
+    end
   end
 end

@@ -1,11 +1,6 @@
 module Conjure
   module Service
     class RailsServer < Basic
-      def file_contents(config, file_path)
-        file_path = File.join config.config_path, file_path
-        `cat #{file_path}`
-      end
-
       def initialize(host, github_url, app_name, database_ip_address, rails_environment = "production")
         config = host.config
         ruby_version = file_contents(config, "../.ruby-version").strip
