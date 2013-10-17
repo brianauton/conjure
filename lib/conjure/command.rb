@@ -22,15 +22,7 @@ module Conjure
     private
 
     def application
-      Service::RailsApplication.create github_url, config(Dir.pwd)
-    end
-
-    def config(source_path)
-      require "ostruct"
-      config_path = File.join source_path, "config", "conjure.yml"
-      data = YAML.load_file config_path
-      data["config_path"] = File.dirname config_path
-      OpenStruct.new data
+      Service::RailsApplication.create github_url
     end
 
     def github_url

@@ -3,7 +3,7 @@ module Conjure
     class RailsServer < Basic
       def initialize(host, app_name, rails_environment)
         @app_name = app_name
-        ruby_version = file_contents(host.config, "../.ruby-version").strip
+        ruby_version = file_contents("../.ruby-version").strip
         @container = host.containers.create(
           label: "rails",
           base_image: "ubuntu",

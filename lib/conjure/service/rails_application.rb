@@ -1,11 +1,10 @@
 module Conjure
   module Service
     class RailsApplication < Basic
-      def initialize(github_url, config = {})
+      def initialize(github_url)
         @github_url = github_url
         @name = name_from_github_url github_url
         @environment = "production"
-        @config = config
       end
 
       def deploy
@@ -19,7 +18,7 @@ module Conjure
       end
 
       def docker
-        @docker ||= Service::DockerHost.create "#{@name}-#{@environment}", @config
+        @docker ||= Service::DockerHost.create "#{@name}-#{@environment}"
       end
 
       def database_client

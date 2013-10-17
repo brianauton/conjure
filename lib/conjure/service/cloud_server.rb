@@ -3,9 +3,8 @@ module Conjure
     class CloudServer < Basic
       require "fog"
 
-      def initialize(name, config = {})
+      def initialize(name)
         @name = name
-        @config = config
       end
 
       def run(command, options = {})
@@ -64,8 +63,8 @@ module Conjure
       def compute_options
         {
           provider: :digitalocean,
-          digitalocean_api_key: config.digitalocean_api_key,
-          digitalocean_client_id: config.digitalocean_client_id,
+          digitalocean_api_key: Conjure.config.digitalocean_api_key,
+          digitalocean_client_id: Conjure.config.digitalocean_client_id,
         }
       end
 
@@ -74,15 +73,11 @@ module Conjure
       end
 
       def region_id
-        @region_id ||= connection.regions.find{|r| r.name == config.digitalocean_region}.id
+        @region_id ||= connection.regions.find{|r| r.name == Conjure.config.digitalocean_region}.id
       end
 
       def image_id
         @image_id ||= connection.images.find{|r| r.name == "Ubuntu 13.04 x64"}.id
-      end
-
-      def config
-        @config
       end
 
       def set_fog_credentials
@@ -90,11 +85,11 @@ module Conjure
       end
 
       def private_key_file
-        Pathname.new(config.config_path).join config.private_key_file
+        Pathname.new(Conjure.config.config_path).join Conjure.config.private_key_file
       end
 
       def public_key_file
-        Pathname.new(config.config_path).join config.public_key_file
+        Pathname.new(Conjure.config.config_path).join Conjure.config.public_key_file
       end
 
       def fog_credentials

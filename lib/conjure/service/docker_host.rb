@@ -3,17 +3,12 @@ module Conjure
     class DockerHost < Basic
       VERBOSE = false
 
-      def initialize(server_name, config = {})
+      def initialize(server_name)
         @server_name = server_name
-        @config = config
       end
 
       def server
-        @server ||= Service::CloudServer.create @server_name, config
-      end
-
-      def config
-        @config
+        @server ||= Service::CloudServer.create @server_name
       end
 
       def ip_address
