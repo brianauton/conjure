@@ -33,7 +33,9 @@ module Conjure
       end
 
       def run
+        puts "[ rails] Installing gems"
         @container.command "cd #{@app_name}; bundle --deployment"
+        puts "[ rails] Setting up the database"
         @container.command "cd #{@app_name}; bundle exec rake db:setup"
         @container.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end

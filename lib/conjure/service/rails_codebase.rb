@@ -37,7 +37,9 @@ module Conjure
       end
 
       def install
+        puts "[  repo] Checking out code from git"
         @container.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
+        puts "[  repo] Generating database.yml"
         @container.command "echo '#{database_yml @database_ip_address, @app_name, @rails_environment}' >/#{@app_name}/config/database.yml"
       end
 

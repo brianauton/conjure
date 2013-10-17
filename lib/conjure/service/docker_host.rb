@@ -114,7 +114,7 @@ module Conjure
 
       def run(command = "")
         unless id
-          puts "[docker] Starting #{@label} image"
+          puts "[docker] Starting #{@label}"
           run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
           command = shell_command command if command != ""
           container_id = @host.command("run #{run_options} -d #{installed_image_name} #{command}").strip
@@ -159,7 +159,6 @@ module Conjure
 
       def command(command, options = {})
         stop_image_instances
-        puts "[docker] Executing #{@label} image"
         file_options = options[:files] ? "-v /files:/files" : ""
         file_options += " "+host_volume_options(@host_volumes) if @host_volumes
         @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files])
