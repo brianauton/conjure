@@ -35,7 +35,7 @@ module Conjure
       def run
         @container.command "cd #{@app_name}; bundle --deployment"
         @container.command "cd #{@app_name}; bundle exec rake db:setup"
-        @container.run "cd #{@app_name}; bundle exec rails server -p 80"
+        @container.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
       def apt_packages_required_for_gems
