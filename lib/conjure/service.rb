@@ -1,6 +1,7 @@
 module Conjure
   module Service
     autoload :RailsApplication, "conjure/service/rails_application"
+    autoload :RailsCodebase, "conjure/service/rails_codebase"
     autoload :RailsServer, "conjure/service/rails_server"
     autoload :MachineInstance, "conjure/service/machine_instance"
     autoload :DockerHost, "conjure/service/docker_host"
