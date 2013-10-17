@@ -96,21 +96,28 @@ module Conjure
       end
 
       def image_fingerprint
-        {base_image: @base_image, setup_commands: @setup_commands}
+        Digest::SHA1.hexdigest(dockerfile)[0..11]
       end
 
-      def image_name
-        hash = Digest::SHA1.hexdigest(image_fingerprint.to_yaml).first(12)
-        "#{@label}_#{hash}"
+      def expected_image_name
+        "#{@label}:#{image_fingerprint}"
+      end
+
+      def installed_image_name
+        build unless image_installed?
+        expected_image_name
+      end
+
+      def image_installed?
+        @host.command("history #{expected_image_name}") rescue false
       end
 
       def run(command = "")
         unless id
-          build
           puts "[docker] Starting #{@label} image"
           run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
           command = shell_command command if command != ""
-          container_id = @host.command("run #{run_options} -d #{@label} #{command}").strip
+          container_id = @host.command("run #{run_options} -d #{installed_image_name} #{command}").strip
           if(!id)
             output = @host.command "logs #{container_id}"
             raise "Docker: #{@label} daemon exited with: #{output}"
@@ -144,17 +151,18 @@ module Conjure
       end
 
       def build
+        stop_image_instances
         puts "[docker] Building #{@label} image"
-        raise_build_errors(@host.command "build -t #{@label} -", stdin: dockerfile)
+        raise_build_errors(@host.command "build -t #{expected_image_name} -", stdin: dockerfile)
         @host.clean_stopped_processes
       end
 
       def command(command, options = {})
-        build
+        stop_image_instances
         puts "[docker] Executing #{@label} image"
         file_options = options[:files] ? "-v /files:/files" : ""
         file_options += " "+host_volume_options(@host_volumes) if @host_volumes
-        @host.command "run #{file_options} #{@label} #{shell_command command}", files: files_hash(options[:files])
+        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files])
       end
 
       def host_volume_options(host_volumes)
@@ -175,9 +183,21 @@ module Conjure
       end
 
       def id
-        @id ||= @host.command("ps | grep #{@label}: ; true").strip.split("\n").first.to_s[0..11]
-        @id = nil if @id == ""
-        @id
+        find_process_id expected_image_name
+      end
+
+      def find_process_id(image_name)
+        id = @host.command("ps | grep #{image_name} ; true").strip.split("\n").first.to_s[0..11]
+        id = nil if id == ""
+        id
+      end
+
+      def stop_image_instances
+        while id = find_process_id(@label) do
+          puts "[docker] Stopping #{@label}"
+          @host.command "stop #{id}"
+          @host.clean_stopped_processes
+        end
       end
 
       def ip_address
