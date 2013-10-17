@@ -56,6 +56,10 @@ module Conjure
         command "rm `#{docker_path} ps -a -q`"
       end
 
+      def ensure_host_directory(dir)
+        server.run "mkdir -p #{dir}"
+      end
+
       def shell_escape(text)
         text.gsub "'", "'\"'\"'"
       end
@@ -82,6 +86,7 @@ module Conjure
         @base_image = options[:base_image]
         @ports = options[:ports].to_a
         @volumes = options[:volumes].to_a
+        @host_volumes = options[:host_volumes]
         @setup_commands = options[:setup_commands].to_a
         @daemon_command = options[:daemon_command]
         @environment = options[:environment]
@@ -97,11 +102,13 @@ module Conjure
         "#{@label}_#{hash}"
       end
 
-      def run
+      def run(command = "")
         unless id
           build
           puts "[docker] Starting #{@label} image"
-          container_id = @host.command("run -d #{@label}").strip
+          run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
+          command = shell_command command if command != ""
+          container_id = @host.command("run #{run_options} -d #{@label} #{command}").strip
           if(!id)
             output = @host.command "logs #{container_id}"
             raise "Docker: #{@label} daemon exited with: #{output}"
@@ -144,7 +151,15 @@ module Conjure
         build
         puts "[docker] Executing #{@label} image"
         file_options = options[:files] ? "-v /files:/files" : ""
-        @host.command "run #{file_options} #{@label} #{command}", files: files_hash(options[:files])
+        file_options += " "+host_volume_options(@host_volumes) if @host_volumes
+        @host.command "run #{file_options} #{@label} #{shell_command command}", files: files_hash(options[:files])
+      end
+
+      def host_volume_options(host_volumes)
+        host_volumes.map do |host_path, container_path|
+          @host.ensure_host_directory host_path
+          "-v=#{host_path}:#{container_path}:rw"
+        end.join " "
       end
 
       def files_hash(files_array)
