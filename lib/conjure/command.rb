@@ -22,15 +22,7 @@ module Conjure
     private
 
     def application
-      Service::RailsApplication.create github_url, app_name, rails_environment, config(Dir.pwd)
-    end
-
-    def rails_environment
-      "production"
-    end
-
-    def docker_host
-      Service::DockerHost.create "#{app_name}-#{rails_environment}", config(Dir.pwd)
+      Service::RailsApplication.create github_url, config(Dir.pwd)
     end
 
     def config(source_path)
@@ -41,10 +33,6 @@ module Conjure
       OpenStruct.new data
     end
 
-    def app_name
-      name_from_github_url github_url
-    end
-
     def github_url
       git_origin_url Dir.pwd
     end
@@ -52,10 +40,6 @@ module Conjure
     def git_origin_url(source_path)
       remote_info = `cd #{source_path}; git remote -v |grep origin`
       remote_info.match(/(git@github.com[^ ]+)/)[1]
-    end
-
-    def name_from_github_url(github_url)
-      github_url.match(/\/([^.]+)\.git$/)[1]
     end
   end
 end

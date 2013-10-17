@@ -1,10 +1,10 @@
 module Conjure
   module Service
     class RailsApplication < Basic
-      def initialize(github_url, name = "myapp", environment = "production", config = {})
+      def initialize(github_url, config = {})
         @github_url = github_url
-        @name = name
-        @environment = environment
+        @name = name_from_github_url github_url
+        @environment = "production"
         @config = config
       end
 
@@ -24,6 +24,10 @@ module Conjure
 
       def database_client
         Service::PostgresClient.create docker, "#{@name}_#{@environment}"
+      end
+
+      def name_from_github_url(github_url)
+        github_url.match(/\/([^.]+)\.git$/)[1]
       end
     end
   end
