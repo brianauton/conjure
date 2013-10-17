@@ -22,6 +22,8 @@ module Conjure
 
       def new_docker_path
         puts "[docker] Installing docker"
+        server.run "dd if=/dev/zero of=/root/swapfile bs=1024 count=524288"
+        server.run "mkswap /root/swapfile; swapon /root/swapfile"
         server.run "curl https://get.docker.io/gpg | apt-key add -"
         server.run "echo 'deb https://get.docker.io/ubuntu docker main' >/etc/apt/sources.list.d/docker.list"
         server.run "apt-get update"
