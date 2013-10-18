@@ -49,10 +49,6 @@ module Conjure
         result.stdout
       end
 
-      def clean_stopped_processes
-        command "rm `#{docker_path} ps -a -q`"
-      end
-
       def ensure_host_directory(dir)
         server.run "mkdir -p #{dir}"
       end
@@ -63,6 +59,10 @@ module Conjure
 
       def images
         ImageSet.new self
+      end
+
+      def containers
+        ContainerSet.new :host => self
       end
     end
 
@@ -146,14 +146,14 @@ module Conjure
       end
 
       def build
-        stop_image_instances
+        destroy_instances
         puts "[docker] Building #{@label} image"
         raise_build_errors(@host.command "build -t #{expected_image_name} -", stdin: dockerfile)
-        @host.clean_stopped_processes
+        @host.containers.destroy_all_stopped
       end
 
       def command(command, options = {})
-        stop_image_instances
+        destroy_instances
         file_options = options[:files] ? "-v /files:/files" : ""
         file_options += " "+host_volume_options(@host_volumes) if @host_volumes
         @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files])
@@ -177,25 +177,43 @@ module Conjure
       end
 
       def id
-        find_process_id expected_image_name
+        container = @host.containers.find(:image_name => expected_image_name)
+        container.id if container
       end
 
-      def find_process_id(image_name)
-        id = @host.command("ps | grep #{image_name} ; true").strip.split("\n").first.to_s[0..11]
-        id = nil if id == ""
-        id
-      end
-
-      def stop_image_instances
-        while id = find_process_id(@label) do
-          puts "[docker] Stopping #{@label}"
-          @host.command "stop #{id}"
-          @host.clean_stopped_processes
-        end
+      def destroy_instances
+        @host.containers.destroy_all :image_name => @label
       end
 
       def ip_address
         Container.new(:host => @host, :id => id).ip_address
+      end
+    end
+
+    class ContainerSet
+      attr_accessor :host
+
+      def initialize(options)
+        self.host = options[:host]
+      end
+
+      def find(options)
+        image_name = options[:image_name]
+        id = host.command("ps | grep #{image_name} ; true").strip.split("\n").first.to_s[0..11]
+        id = nil if id == ""
+        Container.new(:host => host, :id => id) if id
+      end
+
+      def destroy_all_stopped
+        command "rm `#{docker_path} ps -a -q`"
+      end
+
+      def destroy_all(options)
+        while container = find(:image_name => options[:image_name]) do
+          puts "[docker] Stopping #{options[:image_name]}"
+          host.command "stop #{container.id}"
+          host.command "rm #{container.id}"
+        end
       end
     end
 
