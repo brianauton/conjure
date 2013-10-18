@@ -9,12 +9,12 @@ module Conjure
 
     desc "import FILE", "Imports the production database from a postgres SQL dump"
     def import(file)
-      application.database_client.import file
+      application.database.import file
     end
 
     desc "export FILE", "Exports the production database to a postgres SQL dump"
     def export(file)
-      application.database_client.export file
+      application.database.export file
     end
 
     default_task :help
