@@ -8,7 +8,7 @@ module Conjure
       end
 
       def deploy
-        postgres = Service::PostgresServer.create docker
+        postgres = Service::PostgresDatabase.create docker, "#{@name}_#{@environment}"
         postgres.run
         codebase = Service::RailsCodebase.create docker, @github_url, @name, postgres.ip_address, @environment
         codebase.install
@@ -22,7 +22,7 @@ module Conjure
       end
 
       def database_client
-        Service::PostgresClient.create docker, "#{@name}_#{@environment}"
+        Service::PostgresDatabase.create docker, "#{@name}_#{@environment}"
       end
 
       def name_from_github_url(github_url)
