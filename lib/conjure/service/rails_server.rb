@@ -2,10 +2,14 @@ module Conjure
   module Service
     class RailsServer < Basic
       def initialize(host, app_name, rails_environment)
+        @host = host
         @app_name = app_name
-        ruby_version = file_contents("../.ruby-version").strip
-        @image = host.images.create(
-          label: "rails",
+        @rails_environment = rails_environment
+      end
+
+      def base_image
+        @base_image ||= @host.images.create(
+          label: "rails_base",
           base_image: "ubuntu",
           setup_commands: [
             "apt-get install -y curl git",
@@ -22,21 +26,36 @@ module Conjure
           ],
           environment: {
             PATH:"/usr/local/rvm/gems/ruby-1.9.3-p448@global/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-            RAILS_ENV: rails_environment,
+            RAILS_ENV: @rails_environment,
             GITHUB_TOKEN: ENV["GITHUB_TOKEN"],
             FRECKLE_SUBDOMAIN: "neomind",
           },
+          host_volumes: {"/rails_app" => "/#{@app_name}"},
+        )
+      end
+
+      def server_image
+        @server_image ||= @host.images.create(
+          label: "rails_server",
+          base_image: base_image,
           ports: [80],
+          environment: {
+            PATH:"/usr/local/rvm/gems/ruby-1.9.3-p448@global/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          },
           host_volumes: {"/rails_app" => "/#{@app_name}"},
         )
       end
 
       def run
         puts "[ rails] Installing gems"
-        @image.command "cd #{@app_name}; bundle --deployment"
+        base_image.command "cd #{@app_name}; bundle --deployment"
         puts "[ rails] Setting up the database"
-        @image.command "cd #{@app_name}; bundle exec rake db:setup"
-        @image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
+        base_image.command "cd #{@app_name}; bundle exec rake db:setup"
+        server_image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
+      end
+
+      def ruby_version
+        file_contents("../.ruby-version").strip
       end
 
       def apt_packages_required_for_gems
