@@ -20,11 +20,11 @@ module Conjure
       end
 
       def run
-        @image.run
+        @container = @image.run
       end
 
       def ip_address
-        @image.ip_address
+        @container.ip_address
       end
     end
   end

@@ -108,17 +108,18 @@ module Conjure
       end
 
       def run(command = "")
-        unless id
+        unless running_container
           puts "[docker] Starting #{@label}"
           run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
           command = shell_command command if command != ""
           container_id = @host.command("run #{run_options} -d #{installed_image_name} #{command}").strip
-          if(!id)
+          if(!running_container)
             output = @host.command "logs #{container_id}"
             raise "Docker: #{@label} daemon exited with: #{output}"
           end
         end
-        puts "[docker] #{@label} is running at #{ip_address}"
+        puts "[docker] #{@label} is running at #{running_container.ip_address}"
+        running_container
       end
 
       def raise_build_errors(build_output)
@@ -130,9 +131,6 @@ module Conjure
           last_section.gsub!(/Error build: The command.*/m, "")
           raise "Docker: build step '#{failed_command}' failed: #{last_section.strip}"
         end
-      end
-
-      def raise_run_errors(run_output)
       end
 
       def dockerfile
@@ -176,17 +174,12 @@ module Conjure
         "bash -c '#{@host.shell_escape command}'"
       end
 
-      def id
-        container = @host.containers.find(:image_name => expected_image_name)
-        container.id if container
+      def running_container
+        @runnning_container ||= @host.containers.find(:image_name => expected_image_name)
       end
 
       def destroy_instances
         @host.containers.destroy_all :image_name => @label
-      end
-
-      def ip_address
-        Container.new(:host => @host, :id => id).ip_address
       end
     end
 
