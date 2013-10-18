@@ -195,12 +195,25 @@ module Conjure
       end
 
       def ip_address
+        Container.new(:host => @host, :id => id).ip_address
+      end
+    end
+
+    class Container
+      attr_accessor :id, :host
+
+      def initialize(options)
+        self.id = options[:id]
+        self.host = options[:host]
+      end
+
+      def ip_address
         status["NetworkSettings"]["IPAddress"]
       end
 
       def status
         require "json"
-        JSON.parse(@host.command "inspect #{id}").first
+        JSON.parse(host.command "inspect #{id}").first
       end
     end
   end
