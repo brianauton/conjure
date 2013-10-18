@@ -134,13 +134,17 @@ module Conjure
       end
 
       def dockerfile
-        lines = ["FROM #{@base_image}"]
+        lines = ["FROM #{base_image_name}"]
         lines += @environment.map{|k, v| "ENV #{k} #{v}"} if @environment
         lines += @setup_commands.map{|c| "RUN #{c}"}
         lines << "EXPOSE #{@ports.map{|p| "#{p}:#{p}"}.join ' '}" if @ports.to_a.any?
         lines << "VOLUME #{@volumes.inspect}" if @volumes.to_a.any?
         lines << "ENTRYPOINT #{@daemon_command}" if @daemon_command
         lines.join "\n"
+      end
+
+      def base_image_name
+        @base_image.respond_to?(:installed_image_name) ? @base_image.installed_image_name : @base_image
       end
 
       def build
@@ -198,7 +202,7 @@ module Conjure
       end
 
       def destroy_all_stopped
-        command "rm `#{docker_path} ps -a -q`"
+        host.command "rm `#{host.docker_path} ps -a -q`"
       end
 
       def destroy_all(options)
