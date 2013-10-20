@@ -36,10 +36,25 @@ module Conjure
       end
 
       def install
+        checkout_code
+        configure_database
+        configure_logs
+      end
+
+      def checkout_code
         puts "[  repo] Checking out code from git"
         @image.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
+      end
+
+      def configure_database
         puts "[  repo] Generating database.yml"
         @image.command "echo '#{database_yml}' >/#{@app_name}/config/database.yml"
+      end
+
+      def configure_logs
+        puts "[  repo] Configuring application logger"
+        setup = 'Rails.logger = Logger.new "#{Rails.root}/log/#{Rails.env}.log"'
+        @image.command "echo '#{setup}' >/#{@app_name}/config/initializers/z_conjure_logger.rb"
       end
     end
   end
