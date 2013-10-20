@@ -54,6 +54,10 @@ module Conjure
         server_image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
+      def log
+        puts base_image.command "tail #{@app_name}/log/#{@rails_environment}.log"
+      end
+
       def ruby_version
         file_contents("../.ruby-version").strip
       end

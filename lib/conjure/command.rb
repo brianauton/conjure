@@ -17,6 +17,11 @@ module Conjure
       application.database.export file
     end
 
+    desc "log", "Show the Rails log from the deployed server"
+    def log
+      application.rails.log
+    end
+
     default_task :help
 
     private
