@@ -38,13 +38,13 @@ module Conjure
         @docker_path ||= new_docker_path
       end
 
-      def command(command, options = {})
+      def command(command, options = {}, &block)
         full_command = "#{docker_path} #{command}"
         full_command = "nohup #{full_command}" if options[:nohup]
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
         puts "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
         puts "   [ssh] #{full_command}" if VERBOSE
-        result = server.run full_command, files: options[:files]
+        result = server.run full_command, files: options[:files], &block
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
       end
@@ -154,11 +154,11 @@ module Conjure
         @host.containers.destroy_all_stopped
       end
 
-      def command(command, options = {})
+      def command(command, options = {}, &block)
         destroy_instances
         file_options = options[:files] ? "-v /files:/files" : ""
         file_options += " "+host_volume_options(@host_volumes) if @host_volumes
-        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files])
+        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files]), &block
       end
 
       def host_volume_options(host_volumes)

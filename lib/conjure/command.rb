@@ -17,9 +17,11 @@ module Conjure
       application.database.export file
     end
 
-    desc "log", "Show the Rails log from the deployed server"
+    desc "log", "Displays the Rails log from the deployed application"
+    method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
+    method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
-      application.rails.log
+      application.rails.log :lines => options[:num], :tail => options[:tail]
     end
 
     default_task :help

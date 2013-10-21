@@ -7,10 +7,10 @@ module Conjure
         @name = name
       end
 
-      def run(command, options = {})
+      def run(command, options = {}, &block)
         set_fog_credentials
         upload_files options[:files].to_a
-        result = server.ssh(command).first
+        result = server.ssh(command, &block).first
         remove_files options[:files].to_a
         result
       end
