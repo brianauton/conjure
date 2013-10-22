@@ -2,22 +2,22 @@ require "thor"
 
 module Conjure
   class Command < Thor
-    desc "deploy", "Deploys the app"
+    desc "deploy", "Deploy the app"
     def deploy
       application.deploy
     end
 
-    desc "import FILE", "Imports the production database from a postgres SQL dump"
+    desc "import FILE", "Import the production database from a postgres SQL dump"
     def import(file)
       application.database.import file
     end
 
-    desc "export FILE", "Exports the production database to a postgres SQL dump"
+    desc "export FILE", "Export the production database to a postgres SQL dump"
     def export(file)
       application.database.export file
     end
 
-    desc "log", "Displays the Rails log from the deployed application"
+    desc "log", "Display the Rails log from the deployed application"
     method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
     method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
