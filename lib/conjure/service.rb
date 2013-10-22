@@ -7,6 +7,7 @@ module Conjure
     autoload :DockerHost, "conjure/service/docker_host"
     autoload :CloudServer, "conjure/service/cloud_server"
     autoload :PostgresDatabase, "conjure/service/postgres_database"
+    autoload :RemoteShell, "conjure/service/remote_shell"
   end
 
   class Basic

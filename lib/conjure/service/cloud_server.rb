@@ -10,7 +10,7 @@ module Conjure
       def run(command, options = {}, &block)
         set_fog_credentials
         upload_files options[:files].to_a
-        result = server.ssh(command, &block).first
+        result = remote_shell.run(command, &block)
         remove_files options[:files].to_a
         result
       end
@@ -22,7 +22,7 @@ module Conjure
       end
 
       def remove_files(files)
-        files.each{|local_path, remote_path| server.ssh "rm -f #{remote_path}"}
+        files.each{|local_path, remote_path| run "rm -f #{remote_path}"}
       end
 
       def server
@@ -97,6 +97,14 @@ module Conjure
           private_key_path: private_key_file,
           public_key_path: public_key_file,
         }
+      end
+
+      def remote_shell
+        @remote_shell ||= RemoteShell.new(
+          :ip_address => server.public_ip_address,
+          :username => "root",
+          :private_key_path => private_key_file,
+        )
       end
     end
   end
