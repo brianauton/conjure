@@ -65,6 +65,12 @@ module Conjure
       rescue Interrupt => e
       end
 
+      def rake(command)
+        base_image.command "cd #{@app_name}; bundle exec rake #{command}" do |stdout, stderr|
+          print stdout
+        end
+      end
+
       def ruby_version
         file_contents("../.ruby-version").strip
       end

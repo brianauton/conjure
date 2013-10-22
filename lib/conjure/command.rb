@@ -24,6 +24,11 @@ module Conjure
       application.rails.log :lines => options[:num], :tail => options[:tail]
     end
 
+    desc "rake [ARGUMENTS...]", "Run the specified rake task on the deployed application"
+    def rake(*arguments)
+      application.rails.rake arguments.join(" ")
+    end
+
     default_task :help
 
     private
