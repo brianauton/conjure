@@ -29,6 +29,11 @@ module Conjure
       application.rails.rake arguments.join(" ")
     end
 
+    desc "console", "Start a console on the deployed application"
+    def console
+      application.rails.console
+    end
+
     default_task :help
 
     private

@@ -71,6 +71,12 @@ module Conjure
         end
       end
 
+      def console
+        base_image.command "cd #{@app_name}; bundle exec rails console", :stream_stdin => true do |stdout, stderr|
+          print stdout
+        end
+      end
+
       def ruby_version
         file_contents("../.ruby-version").strip
       end

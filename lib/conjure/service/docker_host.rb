@@ -44,7 +44,7 @@ module Conjure
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
         puts "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
         puts "   [ssh] #{full_command}" if VERBOSE
-        result = server.run full_command, files: options[:files], &block
+        result = server.run full_command, :stream_stdin => options[:stream_stdin], :files => options[:files], &block
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
       end
@@ -158,7 +158,8 @@ module Conjure
         destroy_instances
         file_options = options[:files] ? "-v /files:/files" : ""
         file_options += " "+host_volume_options(@host_volumes) if @host_volumes
-        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", files: files_hash(options[:files]), &block
+        file_options += " -i" if options[:stream_stdin]
+        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", :stream_stdin => options[:stream_stdin], :files => files_hash(options[:files]), &block
       end
 
       def host_volume_options(host_volumes)

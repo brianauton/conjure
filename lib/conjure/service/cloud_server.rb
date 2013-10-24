@@ -10,7 +10,7 @@ module Conjure
       def run(command, options = {}, &block)
         set_fog_credentials
         upload_files options[:files].to_a
-        result = remote_shell.run(command, &block)
+        result = remote_shell.run(command, :stream_stdin => options[:stream_stdin], &block)
         remove_files options[:files].to_a
         result
       end
