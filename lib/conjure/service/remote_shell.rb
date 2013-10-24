@@ -7,9 +7,9 @@ module Conjure
         @options = options
       end
     
-      def run(command)
+      def run(command, options = {})
         stdout, stderr, exit_status = ["", "", nil]
-        connection.open_channel do |channel|
+        session.open_channel do |channel|
           channel.request_pty
           channel.exec command do |c, success|
             raise "Failed to execute command via SSH" unless success
@@ -20,18 +20,38 @@ module Conjure
             channel.on_extended_data { |c, type, data| stderr << data }
             channel.on_request("exit-status") { |c, data| exit_status = data.read_long }
           end
+          if options[:stream_stdin]
+            channel.on_process do
+              poll_stream(STDIN) { |data| channel.send_data data }
+            end
+          end
         end
-        connection.loop
+        if options[:stream_stdin]
+          with_raw_tty { session.loop 0.01 }
+        else
+          session.loop
+        end
         Result.new stdout, stderr, exit_status
       end
       
-      def connection
-        connection_options = {
+      def session
+        session_options = {
           :auth_methods => ["publickey"],
           :key_data => File.read(@options[:private_key_path]),
           :keys_only => true,
         }
-        @connection ||= Net::SSH.start(@options[:ip_address], @options[:username], connection_options)
+        @session ||= Net::SSH.start @options[:ip_address], @options[:username], session_options
+      end
+
+      def poll_stream(stream, &block)
+        yield stream.sysread(1) if IO.select([stream], nil, nil, 0.01)
+      end
+
+      def with_raw_tty
+        system "stty raw -echo"
+        yield
+      ensure
+        system "stty -raw echo"
       end
     end
 
