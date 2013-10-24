@@ -36,14 +36,23 @@ module Conjure
       end
 
       def install
-        checkout_code
+        code_checked_out ? fetch_code_updates : checkout_code
         configure_database
         configure_logs
       end
 
+      def code_checked_out
+        @image.command("[ -d #{@app_name}/.git ] && echo yes; true").strip == "yes"
+      end
+
       def checkout_code
         puts "[  repo] Checking out code from git"
-        @image.command "if [ ! -d #{@app_name}/.git ]; then git clone #{@github_url}; fi"
+        @image.command "git clone #{@github_url}; fi"
+      end
+
+      def fetch_code_updates
+        puts "[  repo] Fetching code updates from git"
+        @image.command "cd #{@app_name}; git fetch; git reset --hard"
       end
 
       def configure_database
