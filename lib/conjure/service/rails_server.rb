@@ -49,7 +49,7 @@ module Conjure
       def run
         install_gems
         update_database
-        start_server
+        restart_server
       end
 
       def install_gems
@@ -76,7 +76,8 @@ module Conjure
         base_image.command "cd #{@app_name}; bundle exec rake db:setup"
       end
 
-      def start_server
+      def restart_server
+        server_image.stop
         server_image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
