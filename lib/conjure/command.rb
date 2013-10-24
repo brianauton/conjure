@@ -2,8 +2,13 @@ require "thor"
 
 module Conjure
   class Command < Thor
+    attr_accessor :application_options
+
     desc "deploy", "Deploy the app"
+    method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy"
+    method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
     def deploy
+      self.application_options = options
       application.deploy
     end
 
@@ -39,7 +44,8 @@ module Conjure
     private
 
     def application
-      Service::RailsApplication.create github_url
+      self.application_options ||= {}
+      Service::RailsApplication.create application_options.merge(:github_url => github_url)
     end
 
     def github_url

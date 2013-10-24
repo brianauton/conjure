@@ -1,8 +1,9 @@
 module Conjure
   module Service
     class RailsCodebase < Basic
-      def initialize(host, github_url, app_name, database_ip_address, rails_environment)
+      def initialize(host, github_url, branch, app_name, database_ip_address, rails_environment)
         @github_url = github_url
+        @branch = branch
         @app_name = app_name
         @database_ip_address = database_ip_address
         @rails_environment = rails_environment
@@ -47,12 +48,12 @@ module Conjure
 
       def checkout_code
         puts "[  repo] Checking out code from git"
-        @image.command "git clone #{@github_url}; fi"
+        @image.command "git clone -b #{@branch} #{@github_url}"
       end
 
       def fetch_code_updates
         puts "[  repo] Fetching code updates from git"
-        @image.command "cd #{@app_name}; git fetch; git reset --hard"
+        @image.command "cd #{@app_name}; git reset --hard; git checkout #{@branch}; git pull"
       end
 
       def configure_database
