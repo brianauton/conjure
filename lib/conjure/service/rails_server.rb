@@ -47,10 +47,36 @@ module Conjure
       end
 
       def run
+        install_gems
+        update_database
+        start_server
+      end
+
+      def install_gems
         puts "[ rails] Installing gems"
         base_image.command "cd #{@app_name}; bundle --deployment"
+      end
+
+      def update_database
+        database_exists ? migrate_database : initialize_database
+      end
+
+      def database_exists
+        puts "[ rails] Checking the database status"
+        base_image.command("cd #{@app_name}; bundle exec rake db:version; true").include? "Current version:"
+      end
+
+      def migrate_database
+        puts "[ rails] Migrating the database"
+        base_image.command "cd #{@app_name}; bundle exec rake db:migrate"
+      end
+
+      def initialize_database
         puts "[ rails] Setting up the database"
         base_image.command "cd #{@app_name}; bundle exec rake db:setup"
+      end
+
+      def start_server
         server_image.run "cd #{@app_name}; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
