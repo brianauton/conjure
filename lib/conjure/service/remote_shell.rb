@@ -39,6 +39,7 @@ module Conjure
           :auth_methods => ["publickey"],
           :key_data => File.read(@options[:private_key_path]),
           :keys_only => true,
+          :paranoid => false,
         }
         @session ||= Net::SSH.start @options[:ip_address], @options[:username], session_options
       end
