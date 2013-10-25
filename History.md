@@ -1,3 +1,11 @@
+### Version 0.1.0
+2013-10-24
+
+* Support revision deploys
+* Add `--branch` option for deploys
+* Add `console`, `log`, and `rake` commands
+* SSH performance improvements
+
 ### Version 0.0.2
 2013-10-14
 

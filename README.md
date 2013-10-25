@@ -73,19 +73,46 @@ Finally, tell Conjure to deploy your app:
 
 The last line of the output will tell you the IP address of the
 deployed server. Repeating the command will reuse the existing server
-rather than deploying a new one.
+rather than deploying a new one. Specify a branch to deploy with
+`--branch` or `-b` (default is `master`):
+
+    conjure deploy --branch=mybranch
 
 ### Additional Commands
 
-These commands are available after you've deployed with `conjure
+Additional commands are available after you've deployed with `conjure
 deploy`.
+
+#### Export
+
+Produce a Postgres SQL dump of the currently-deployed server's
+production database, and save it to the local file `FILE`.
 
     conjure export FILE
 
-This will produce a Postgres SQL dump of the currently-deployed
-server's production database, and save it to the local file `FILE`.
+#### Import
+
+Overwrite the production database on the currently-deployed server
+with a Postgres SQL dump from the local file `FILE`.
 
     conjure import FILE
 
-This will overwrite the production database on the currently-deployed
-server with a Postgres SQL dump from the local file `FILE`.
+#### Log
+
+Show logs from the deployed application. Optionally specify the number
+of lines with `-n`, and use --tail to continue streaming new lines as
+they are added to the log.
+
+    conjure log [-n=NUM] [--tail|-t]
+
+#### Console
+
+Open a console on the deployed application.
+
+    conjure console
+
+#### Rake
+
+Run a rake task on the deployed application and show the output.
+
+    conjure rake [ARGUMENTS...]

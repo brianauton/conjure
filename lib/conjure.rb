@@ -1,6 +1,6 @@
 module Conjure
 
-  VERSION = "0.0.2" unless defined?(VERSION)
+  VERSION = "0.1.0" unless defined?(VERSION)
   autoload :Command, "conjure/command"
   autoload :Config, "conjure/config"
   autoload :Service, "conjure/service"
