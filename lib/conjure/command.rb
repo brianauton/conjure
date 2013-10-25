@@ -7,8 +7,13 @@ module Conjure
     desc "deploy", "Deploy the app"
     method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy"
     method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
+    method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     def deploy
-      self.application_options = options
+      self.application_options = {
+        :branch => options[:branch],
+        :test => options[:test],
+        :origin => options[:origin],
+      }
       application.deploy
     end
 
@@ -45,7 +50,8 @@ module Conjure
 
     def application
       self.application_options ||= {}
-      Service::RailsApplication.create application_options.merge(:github_url => github_url)
+      self.application_options[:origin] ||= github_url
+      Service::RailsApplication.create self.application_options
     end
 
     def github_url
