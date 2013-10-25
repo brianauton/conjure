@@ -17,7 +17,7 @@ module Conjure
 
       def upload_files(files)
         dir_names = files.map{|local_path, remote_path| File.dirname remote_path}.uniq
-        server.ssh "mkdir -p #{dir_names.join ' '}" if dir_names.any?
+        run "mkdir -p #{dir_names.join ' '}" if dir_names.any?
         files.each{|local_path, remote_path| server.scp local_path, remote_path}
       end
 
