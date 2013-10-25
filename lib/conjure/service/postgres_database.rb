@@ -49,12 +49,12 @@ module Conjure
         File.open file, "w" do |f|
           f.write base_image.command("#{bin_path}/pg_dump #{client_options} #{@db_name}")
         end
-        puts "[export] #{File.size file} bytes exported to #{file}"
+        Conjure.log "[export] #{File.size file} bytes exported to #{file}"
       end
 
       def import(file)
         base_image.command "#{bin_path}/psql #{client_options} -d #{@db_name} -f /files/#{File.basename file}", files: [file]
-        puts "[import] #{File.size file} bytes imported from #{file}"
+        Conjure.log "[import] #{File.size file} bytes imported from #{file}"
       end
 
       def client_options

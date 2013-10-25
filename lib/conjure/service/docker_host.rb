@@ -16,7 +16,7 @@ module Conjure
       end
 
       def new_docker_path
-        puts "[docker] Installing docker"
+        Conjure.log "[docker] Installing docker"
         server.run "dd if=/dev/zero of=/root/swapfile bs=1024 count=524288"
         server.run "mkswap /root/swapfile; swapon /root/swapfile"
         server.run "curl https://get.docker.io/gpg | apt-key add -"
@@ -29,7 +29,7 @@ module Conjure
       def existing_docker_path
         path = server.run("which docker").stdout.to_s.strip
         path = nil if path == ""
-        puts "[docker] Using installed #{path}" if path
+        Conjure.log "[docker] Using installed #{path}" if path
         path
       end
 
@@ -42,8 +42,8 @@ module Conjure
         full_command = "#{docker_path} #{command}"
         full_command = "nohup #{full_command}" if options[:nohup]
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
-        puts "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
-        puts "   [ssh] #{full_command}" if VERBOSE
+        Conjure.log "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
+        Conjure.log "   [ssh] #{full_command}" if VERBOSE
         result = server.run full_command, :stream_stdin => options[:stream_stdin], :files => options[:files], &block
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
@@ -109,7 +109,7 @@ module Conjure
 
       def run(command = "")
         unless running_container
-          puts "[docker] Starting #{@label}"
+          Conjure.log "[docker] Starting #{@label}"
           run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
           command = shell_command command if command != ""
           container_id = @host.command("run #{run_options} -d #{installed_image_name} #{command}").strip
@@ -118,7 +118,7 @@ module Conjure
             raise "Docker: #{@label} daemon exited with: #{output}"
           end
         end
-        puts "[docker] #{@label} is running at #{running_container.ip_address}"
+        Conjure.log "[docker] #{@label} is running at #{running_container.ip_address}"
         running_container
       end
 
@@ -149,7 +149,7 @@ module Conjure
 
       def build
         destroy_instances
-        puts "[docker] Building #{@label} image"
+        Conjure.log "[docker] Building #{@label} image"
         raise_build_errors(@host.command "build -t #{expected_image_name} -", stdin: dockerfile)
         @host.containers.destroy_all_stopped
       end
@@ -212,7 +212,7 @@ module Conjure
 
       def destroy_all(options)
         while container = find(:image_name => options[:image_name]) do
-          puts "[docker] Stopping #{options[:image_name]}"
+          Conjure.log "[docker] Stopping #{options[:image_name]}"
           host.command "stop #{container.id}"
           host.command "rm #{container.id}"
         end
