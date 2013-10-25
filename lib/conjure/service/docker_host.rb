@@ -186,6 +186,10 @@ module Conjure
       def destroy_instances
         @host.containers.destroy_all :image_name => @label
       end
+
+      def stop
+        destroy_instances
+      end
     end
 
     class ContainerSet

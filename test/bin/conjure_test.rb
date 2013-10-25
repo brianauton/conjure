@@ -15,6 +15,21 @@ class ConjureCommandLineTest < Test
     assert_equal "", result.standard_output
   end
 
+  test "allows specifying a branch to deploy with --branch" do
+    result = run_local "conjure deploy --branch mybranch"
+    assert_match "Deploying conjure:mybranch", result.standard_output
+  end
+
+  test "allows specifying a branch to deploy with -b" do
+    result = run_local "conjure deploy -b mybranch"
+    assert_match "Deploying conjure:mybranch", result.standard_output
+  end
+
+  test "defaults to deploying master if no branch given" do
+    result = run_local "conjure deploy --test"
+    assert_match "Deploying conjure:master", result.standard_output
+  end
+
   require "open3"
   def run_local(text)
     result = Open3.capture3 "ruby -Ilib bin/#{text}"
