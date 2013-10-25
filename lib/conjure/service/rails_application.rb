@@ -2,8 +2,8 @@ module Conjure
   module Service
     class RailsApplication < Basic
       def initialize(options)
-        @github_url = options[:github_url]
-        @name = name_from_github_url @github_url
+        @origin = options[:origin]
+        @name = name_from_origin @origin
         @branch = options[:branch] || "master"
         @environment = "production"
         @test = options[:test]
@@ -28,15 +28,15 @@ module Conjure
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.create docker, @github_url, @branch, @name, database.ip_address, @environment
+        @codebase ||= Service::RailsCodebase.create docker, @origin, @branch, @name, database.ip_address, @environment
       end
 
       def rails
         @rails ||= Service::RailsServer.create docker, @name, @environment
       end
 
-      def name_from_github_url(github_url)
-        github_url.match(/\/([^.]+)\.git$/)[1]
+      def name_from_origin(origin)
+        origin.match(/\/([^.]+)\.git$/)[1]
       end
     end
   end
