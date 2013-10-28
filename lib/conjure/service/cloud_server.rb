@@ -2,6 +2,7 @@ module Conjure
   module Service
     class CloudServer < Basic
       require "fog"
+      require "digest/md5"
 
       def initialize(name)
         @name = name
@@ -81,6 +82,7 @@ module Conjure
       end
 
       def set_fog_credentials
+        Fog.credential = fog_key_identifier
         Fog.credentials.merge! fog_credentials
       end
 
@@ -97,6 +99,10 @@ module Conjure
           private_key_path: private_key_file,
           public_key_path: public_key_file,
         }
+      end
+
+      def fog_key_identifier
+        "conjure_#{Digest::MD5.hexdigest(File.read public_key_file)[0..7]}"
       end
 
       def remote_shell
