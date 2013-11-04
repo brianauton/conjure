@@ -105,7 +105,7 @@ module Conjure
       end
 
       def ruby_version
-        file_contents("../.ruby-version").strip
+        Conjure.config.file_contents("../.ruby-version").strip
       end
 
       def apt_packages_required_for_gems

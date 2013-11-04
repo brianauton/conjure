@@ -7,8 +7,8 @@ module Conjure
         @app_name = app_name
         @database_ip_address = database_ip_address
         @rails_environment = rails_environment
-        github_private_key = file_contents(Conjure.config.private_key_file).gsub("\n", "\\n")
-        github_public_key = file_contents(Conjure.config.public_key_file).gsub("\n", "\\n")
+        github_private_key = Conjure.config.file_contents(:private_key_file).gsub("\n", "\\n")
+        github_public_key = Conjure.config.file_contents(:public_key_file).gsub("\n", "\\n")
         @image = host.images.create(
           label: "codebase",
           base_image: "ubuntu",
