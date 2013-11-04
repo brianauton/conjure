@@ -3,7 +3,12 @@ module Conjure
     class RemoteShell
       require "net/ssh"
 
-      def initialize(options)
+      class << self
+        attr_accessor :ssh_service
+      end
+      ssh_service = Net::SSH
+
+      def initialize(options = {})
         @options = options
       end
     
@@ -37,11 +42,15 @@ module Conjure
       def session
         session_options = {
           :auth_methods => ["publickey"],
-          :key_data => File.read(@options[:private_key_path]),
+          :key_data => key_data,
           :keys_only => true,
           :paranoid => false,
         }
-        @session ||= Net::SSH.start @options[:ip_address], @options[:username], session_options
+        @session ||= self.class.ssh_service.start @options[:ip_address], @options[:username], session_options
+      end
+
+      def key_data
+        File.read @options[:private_key_path] if @options[:private_key_path]
       end
 
       def poll_stream(stream, &block)
