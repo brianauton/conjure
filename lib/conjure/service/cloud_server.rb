@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class CloudServer < Basic
+    class CloudServer
       require "fog"
       require "digest/md5"
 

@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class DockerHost < Basic
+    class DockerHost
       VERBOSE = false
 
       def initialize(server_name)
@@ -8,7 +8,7 @@ module Conjure
       end
 
       def server
-        @server ||= Service::CloudServer.create @server_name
+        @server ||= Service::CloudServer.new @server_name
       end
 
       def ip_address

@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class PostgresDatabase < Basic
+    class PostgresDatabase
       def initialize(host, db_name)
         @host = host
         @db_name = db_name

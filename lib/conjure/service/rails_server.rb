@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RailsServer < Basic
+    class RailsServer
       def initialize(host, app_name, rails_environment)
         @host = host
         @app_name = app_name

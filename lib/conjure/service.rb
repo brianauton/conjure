@@ -9,10 +9,4 @@ module Conjure
     autoload :PostgresDatabase, "conjure/service/postgres_database"
     autoload :RemoteShell, "conjure/service/remote_shell"
   end
-
-  class Basic
-    def self.create(*args)
-      new(*args)
-    end
-  end
 end

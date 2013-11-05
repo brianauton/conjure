@@ -51,7 +51,7 @@ module Conjure
     def application
       self.application_options ||= {}
       self.application_options[:origin] ||= github_url
-      Service::RailsApplication.create self.application_options
+      Service::RailsApplication.new self.application_options
     end
 
     def github_url

@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RailsApplication < Basic
+    class RailsApplication
       def initialize(options)
         @origin = options[:origin]
         @name = name_from_origin @origin
@@ -20,19 +20,19 @@ module Conjure
       end
 
       def docker
-        @docker ||= Service::DockerHost.create "#{@name}-#{@environment}"
+        @docker ||= Service::DockerHost.new "#{@name}-#{@environment}"
       end
 
       def database
-        @database ||= Service::PostgresDatabase.create docker, "#{@name}_#{@environment}"
+        @database ||= Service::PostgresDatabase.new docker, "#{@name}_#{@environment}"
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.create docker, @origin, @branch, @name, database.ip_address, @environment
+        @codebase ||= Service::RailsCodebase.new docker, @origin, @branch, @name, database.ip_address, @environment
       end
 
       def rails
-        @rails ||= Service::RailsServer.create docker, @name, @environment
+        @rails ||= Service::RailsServer.new docker, @name, @environment
       end
 
       def name_from_origin(origin)

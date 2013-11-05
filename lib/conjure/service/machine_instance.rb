@@ -2,7 +2,7 @@ require "vagrant"
 
 module Conjure
   module Service
-    class MachineInstance < Basic
+    class MachineInstance
       def start
         @config_path = File.expand_path "../../../../config", __FILE__
         load_environment
