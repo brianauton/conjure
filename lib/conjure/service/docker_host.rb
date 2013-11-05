@@ -110,9 +110,10 @@ module Conjure
       def run(command = "")
         unless running_container
           Conjure.log "[docker] Starting #{@label}"
-          run_options = @host_volumes ? host_volume_options(@host_volumes) : ""
+          run_options = host_volume_options(@host_volumes)
+          run_options += port_options(@ports)
           command = shell_command command if command != ""
-          container_id = @host.command("run #{run_options} -d #{installed_image_name} #{command}").strip
+          container_id = @host.command("run #{run_options.join ' '} -d #{installed_image_name} #{command}").strip
           if(!running_container)
             output = @host.command "logs #{container_id}"
             raise "Docker: #{@label} daemon exited with: #{output}"
@@ -137,7 +138,6 @@ module Conjure
         lines = ["FROM #{base_image_name}"]
         lines += @environment.map{|k, v| "ENV #{k} #{v}"} if @environment
         lines += @setup_commands.map{|c| "RUN #{c}"}
-        lines << "EXPOSE #{@ports.map{|p| "#{p}:#{p}"}.join ' '}" if @ports.to_a.any?
         lines << "VOLUME #{@volumes.inspect}" if @volumes.to_a.any?
         lines << "ENTRYPOINT #{@daemon_command}" if @daemon_command
         lines.join "\n"
@@ -156,17 +156,21 @@ module Conjure
 
       def command(command, options = {}, &block)
         destroy_instances
-        file_options = options[:files] ? "-v /files:/files" : ""
-        file_options += " "+host_volume_options(@host_volumes) if @host_volumes
-        file_options += " -i" if options[:stream_stdin]
-        @host.command "run #{file_options} #{installed_image_name} #{shell_command command}", :stream_stdin => options[:stream_stdin], :files => files_hash(options[:files]), &block
+        file_options = options[:files] ? ["-v /files:/files"] : []
+        file_options += host_volume_options(@host_volumes)
+        file_options << "-i" if options[:stream_stdin]
+        @host.command "run #{file_options.join ' '} #{installed_image_name} #{shell_command command}", :stream_stdin => options[:stream_stdin], :files => files_hash(options[:files]), &block
       end
 
       def host_volume_options(host_volumes)
-        host_volumes.map do |host_path, container_path|
+        host_volumes.to_a.map do |host_path, container_path|
           @host.ensure_host_directory host_path
           "-v=#{host_path}:#{container_path}:rw"
-        end.join " "
+        end
+      end
+
+      def port_options(ports)
+        ports.to_a.map {|port| "-p=#{port}:#{port}" }
       end
 
       def files_hash(files_array)
