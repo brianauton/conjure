@@ -4,7 +4,7 @@ module Conjure
       require "net/ssh"
 
       class << self
-        attr_reader :ssh_service
+        attr_accessor :ssh_service
       end
       @ssh_service = Net::SSH
 
