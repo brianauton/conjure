@@ -4,9 +4,9 @@ module Conjure
       require "net/ssh"
 
       class << self
-        attr_accessor :ssh_service
+        attr_reader :ssh_service
       end
-      ssh_service = Net::SSH
+      @ssh_service = Net::SSH
 
       def initialize(options = {})
         @options = options
