@@ -41,6 +41,10 @@ module Conjure
         @container ||= server_image.run
       end
 
+      def name
+        @db_name
+      end
+
       def ip_address
         container.ip_address
       end

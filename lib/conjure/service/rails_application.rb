@@ -12,7 +12,6 @@ module Conjure
       def deploy
         Conjure.log "[deploy] Deploying #{@name}:#{@branch} to #{@environment}"
         unless @test
-          database.run
           codebase.install
           rails.run
           Conjure.log "[deploy] Application deployed to #{docker.ip_address}"
@@ -28,7 +27,7 @@ module Conjure
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.new docker, @origin, @branch, @name, database.ip_address, @environment
+        @codebase ||= Service::RailsCodebase.new docker, @origin, @branch, @name, database, @environment
       end
 
       def rails

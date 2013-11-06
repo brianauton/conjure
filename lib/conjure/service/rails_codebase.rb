@@ -1,11 +1,11 @@
 module Conjure
   module Service
     class RailsCodebase
-      def initialize(host, github_url, branch, app_name, database_ip_address, rails_environment)
+      def initialize(host, github_url, branch, app_name, database, rails_environment)
         @github_url = github_url
         @branch = branch
         @app_name = app_name
-        @database_ip_address = database_ip_address
+        @database = database
         @rails_environment = rails_environment
         github_private_key = Conjure.config.file_contents(:private_key_file).gsub("\n", "\\n")
         github_public_key = Conjure.config.file_contents(:public_key_file).gsub("\n", "\\n")
@@ -27,9 +27,9 @@ module Conjure
         {
           @rails_environment => {
             "adapter" => "postgresql",
-            "database" => "#{@app_name}_#{@rails_environment}",
+            "database" => @database.name,
             "encoding" => "utf8",
-            "host" => @database_ip_address,
+            "host" => @database.ip_address,
             "username" => "root",
             "template" => "template0",
           }
