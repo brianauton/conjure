@@ -1,3 +1,8 @@
+### Version 0.1.2
+2013-11-06
+
+* Minor fixes for deployment from OSX
+
 ### Version 0.1.1
 2013-11-05
 
