@@ -26,7 +26,7 @@ module Conjure
       def database_yml
         {
           @rails_environment => {
-            "adapter" => "postgresql",
+            "adapter" => database.adapter_name,
             "database" => database.name,
             "encoding" => "utf8",
             "host" => database.ip_address,
@@ -67,8 +67,17 @@ module Conjure
         @image.command "echo '#{setup}' >/#{@app_name}/config/initializers/z_conjure_logger.rb"
       end
 
+      def database_name
+        "#{@app_name}_#{@rails_environment}"
+      end
+
+      def gem_names
+        gemfile = @image.command "cat #{@app_name}/Gemfile"
+        gemfile.scan(/gem ['"]([^'"]+)['"]/).flatten
+      end
+
       def database
-        @database ||= Database.new :docker_host => @host, :database_name => "#{@app_name}_#{@rails_environment}"
+        @database ||= Database.new :docker_host => @host, :codebase => self
       end
     end
   end

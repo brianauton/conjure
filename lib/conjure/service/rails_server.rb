@@ -109,7 +109,7 @@ module Conjure
       end
 
       def apt_packages_required_for_gems
-        ["libpq-dev"]
+        ["libpq-dev", "libmysqlclient-dev"]
       end
     end
   end

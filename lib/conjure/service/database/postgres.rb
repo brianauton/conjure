@@ -69,6 +69,10 @@ module Conjure
         def bin_path
           "/usr/lib/postgresql/9.2/bin"
         end
+
+        def adapter_name
+          "postgresql"
+        end
       end
     end
   end
