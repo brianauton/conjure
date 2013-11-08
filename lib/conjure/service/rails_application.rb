@@ -23,11 +23,11 @@ module Conjure
       end
 
       def database
-        @database ||= Service::PostgresDatabase.new docker, "#{@name}_#{@environment}"
+        codebase.database
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.new docker, @origin, @branch, @name, database, @environment
+        @codebase ||= Service::RailsCodebase.new docker, @origin, @branch, @name, @environment
       end
 
       def rails
