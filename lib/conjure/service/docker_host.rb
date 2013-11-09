@@ -206,7 +206,8 @@ module Conjure
       end
 
       def find(options)
-        image_name = options[:image_name]
+        image_name = options[:image_name].clone
+        image_name << ":" unless image_name.include? ":"
         id = host.command("ps | grep #{image_name} ; true").strip.split("\n").first.to_s[0..11]
         id = nil if id == ""
         Container.new(:host => host, :id => id) if id
