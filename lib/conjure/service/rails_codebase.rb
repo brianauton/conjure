@@ -1,15 +1,15 @@
 module Conjure
   module Service
     class RailsCodebase
-      def initialize(host, github_url, branch, app_name, database, rails_environment)
+      def initialize(host, github_url, branch, app_name, rails_environment)
         @github_url = github_url
         @branch = branch
         @app_name = app_name
-        @database = database
         @rails_environment = rails_environment
+        @host = host
         github_private_key = Conjure.config.file_contents(:private_key_file).gsub("\n", "\\n")
         github_public_key = Conjure.config.file_contents(:public_key_file).gsub("\n", "\\n")
-        @image = host.images.create(
+        @image = @host.images.create(
           label: "codebase",
           base_image: "ubuntu",
           setup_commands: [
@@ -26,10 +26,10 @@ module Conjure
       def database_yml
         {
           @rails_environment => {
-            "adapter" => "postgresql",
-            "database" => @database.name,
+            "adapter" => database.adapter_name,
+            "database" => database.name,
             "encoding" => "utf8",
-            "host" => @database.ip_address,
+            "host" => database.ip_address,
             "username" => "root",
             "template" => "template0",
           }
@@ -65,6 +65,19 @@ module Conjure
         Conjure.log "[  repo] Configuring application logger"
         setup = 'Rails.logger = Logger.new "#{Rails.root}/log/#{Rails.env}.log"'
         @image.command "echo '#{setup}' >/#{@app_name}/config/initializers/z_conjure_logger.rb"
+      end
+
+      def database_name
+        "#{@app_name}_#{@rails_environment}"
+      end
+
+      def gem_names
+        gemfile = @image.command "cat #{@app_name}/Gemfile"
+        gemfile.scan(/gem ['"]([^'"]+)['"]/).flatten
+      end
+
+      def database
+        @database ||= Database.new :docker_host => @host, :codebase => self
       end
     end
   end

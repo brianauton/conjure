@@ -20,8 +20,8 @@ Also, your Rails application requires all of the following:
   * It must have a `.ruby-version` file indicating which version of
     Ruby to run
 
-  * It must be able to run in production mode with a single
-    Postgres database (any existing database.yml will be ignored)
+  * It must be able to run in production mode with a single Postgres
+    or MySQL database (any existing database.yml will be ignored)
 
   * It must be checked out locally into a git repository with a valid
     `origin` remote
@@ -85,15 +85,18 @@ deploy`.
 
 #### Export
 
-Produce a Postgres SQL dump of the currently-deployed server's
-production database, and save it to the local file `FILE`.
+Produce a native-format (Postgres or MySQL) dump of the
+currently-deployed server's production database, and save it to the
+local file `FILE`.
 
     conjure export FILE
 
 #### Import
 
 Overwrite the production database on the currently-deployed server
-with a Postgres SQL dump from the local file `FILE`.
+with a dump from the local file `FILE`. The dump should be in the same
+format as that produced by the `export` command (either a Postgres or
+MySQL dump according to the database type).
 
     conjure import FILE
 
