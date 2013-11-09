@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.executables = ["conjure"]
   s.add_dependency "fog", ">= 1.15.0"
   s.add_dependency "thor"
+  s.add_dependency "unf"
   s.add_development_dependency "minitest"
   s.add_development_dependency "rake"
 end
