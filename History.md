@@ -1,3 +1,8 @@
+### Version 0.1.3
+2013-11-12
+
+* Deploy apps that use MySQL
+
 ### Version 0.1.2
 2013-11-06
 
