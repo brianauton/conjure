@@ -56,15 +56,19 @@ module Conjure
         @image.command "cd #{@app_name}; git reset --hard; git checkout #{@branch}; git pull"
       end
 
+      def volume
+        @volume ||= Volume.new(:docker_host => @host, :host_path => "/rails_app", :container_path => "/#{@app_name}")
+      end
+
       def configure_database
         Conjure.log "[  repo] Generating database.yml"
-        @image.command "echo '#{database_yml}' >/#{@app_name}/config/database.yml"
+        volume.write "config/database.yml", database_yml
       end
 
       def configure_logs
         Conjure.log "[  repo] Configuring application logger"
         setup = 'Rails.logger = Logger.new "#{Rails.root}/log/#{Rails.env}.log"'
-        @image.command "echo '#{setup}' >/#{@app_name}/config/initializers/z_conjure_logger.rb"
+        volume.write "config/initializers/z_conjure_logger.rb", setup
       end
 
       def database_name
@@ -72,8 +76,7 @@ module Conjure
       end
 
       def gem_names
-        gemfile = @image.command "cat #{@app_name}/Gemfile"
-        gemfile.scan(/gem ['"]([^'"]+)['"]/).flatten
+        volume.read("Gemfile").scan(/gem ['"]([^'"]+)['"]/).flatten
       end
 
       def database
