@@ -34,9 +34,8 @@ module Conjure
       end
 
       def git_shell
-        @git_shell ||= @volume.docker_host.images.create({
+        @git_shell ||= @volume.shell.prepare({
           label: "git",
-          base_image: "ubuntu",
           setup_commands: [
             "apt-get install -y git",
             "mkdir -p /root/.ssh; echo '#{@private_key}' > /root/.ssh/id_rsa",
@@ -44,7 +43,7 @@ module Conjure
             "chmod -R go-rwx /root/.ssh",
             "echo 'Host github.com\\n\\tStrictHostKeyChecking no\\n' >> /root/.ssh/config",
           ],
-        }.merge @volume.docker_options)
+        })
       end
     end
   end

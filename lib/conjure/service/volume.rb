@@ -17,17 +17,11 @@ module Conjure
         shell.command "echo '#{data}' >#{@container_path}/#{filename}"
       end
 
-      def docker_options
-        {:host_volumes => {@host_path => @container_path}}
-      end
-
-      private
-
       def shell
-        @shell ||= @docker_host.images.create({
+        @shell ||= @docker_host.shell.prepare(
           :label => "volume",
-          :base_image => "ubuntu",
-        }.merge docker_options)
+          :host_volumes => {@host_path => @container_path},
+        )
       end
     end
   end

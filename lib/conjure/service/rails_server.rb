@@ -8,9 +8,8 @@ module Conjure
       end
 
       def base_image
-        @base_image ||= @host.images.create(
+        @base_image ||= @host.shell.prepare(
           label: "rails_base",
-          base_image: "ubuntu",
           setup_commands: [
             "apt-get install -y curl git",
             "curl -L https://get.rvm.io | bash -s stable",
@@ -35,14 +34,12 @@ module Conjure
       end
 
       def server_image
-        @server_image ||= @host.images.create(
+        @server_image ||= base_image.prepare(
           label: "rails_server",
-          base_image: base_image,
           ports: [80],
           environment: {
             PATH:"/usr/local/rvm/gems/ruby-1.9.3-p448@global/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
           },
-          host_volumes: {"/rails_app" => "/#{@app_name}"},
         )
       end
 
