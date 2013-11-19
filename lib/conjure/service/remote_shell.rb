@@ -42,15 +42,10 @@ module Conjure
       def session
         session_options = {
           :auth_methods => ["publickey"],
-          :key_data => key_data,
-          :keys_only => true,
           :paranoid => false,
+          :forward_agent => true,
         }
         @session ||= self.class.ssh_service.start @options[:ip_address], @options[:username], session_options
-      end
-
-      def key_data
-        File.read @options[:private_key_path] if @options[:private_key_path]
       end
 
       def poll_stream(stream, &block)

@@ -8,9 +8,8 @@ module Conjure
         end
 
         def base_image
-          @base_image ||= @host.images.create(
+          @base_image ||= @host.shell.prepare(
             label: "postgres",
-            base_image: "ubuntu",
             setup_commands: [
               "apt-get install -y python-software-properties software-properties-common",
               "add-apt-repository -y ppa:pitti/postgresql",
@@ -21,9 +20,8 @@ module Conjure
         end
 
         def server_image
-          @server_image ||= @host.images.create(
+          @server_image ||= base_image.prepare(
             label: "pgserver",
-            base_image: base_image,
             setup_commands: [
               "service postgresql start; su postgres -c 'createuser -d -r -s root; createdb -O root root'; service postgresql stop",
               "echo 'host all all 0.0.0.0/0 trust' >>/etc/postgresql/9.2/main/pg_hba.conf",

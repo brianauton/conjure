@@ -66,6 +66,10 @@ module Conjure
       def containers
         ContainerSet.new :host => self
       end
+
+      def shell
+        DockerShell.new :docker_host => self
+      end
     end
 
     class ImageSet
@@ -79,6 +83,8 @@ module Conjure
     end
 
     class Image
+      attr_reader :host_volumes
+
       def initialize(host, options)
         @host = host
         @label = options[:label]

@@ -9,9 +9,8 @@ module Conjure
         end
 
         def base_image
-          @base_image ||= @host.images.create(
+          @base_image ||= @host.shell.prepare(
             label: "mysql",
-            base_image: "ubuntu",
             setup_commands: [
               "apt-get install -y mysql-server mysql-client"
             ],
@@ -19,9 +18,8 @@ module Conjure
         end
 
         def server_image
-          @server_image ||= @host.images.create(
+          @server_image ||= base_image.prepare(
             label: "mysqlserver",
-            base_image: base_image,
             setup_commands: [
               "/usr/sbin/mysqld & sleep 5; echo \"GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '' WITH GRANT OPTION\" | /usr/bin/mysql",
             ],

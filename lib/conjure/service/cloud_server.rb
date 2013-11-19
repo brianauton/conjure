@@ -109,7 +109,6 @@ module Conjure
         @remote_shell ||= RemoteShell.new(
           :ip_address => server.public_ip_address,
           :username => "root",
-          :private_key_path => private_key_file,
         )
       end
     end
