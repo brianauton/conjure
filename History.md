@@ -1,3 +1,8 @@
+### Version 0.1.4
+2013-11-19
+
+* Use SSH agent forwarding to deploy with the user's personal keys
+
 ### Version 0.1.3
 2013-11-12
 
