@@ -43,7 +43,7 @@ and then running `bundle`, OR by installing it directly:
 
 Then add a file to your Rails project called
 `config/conjure.yml`. This should be a YAML file with the following
-fields (all fields are required):
+fields:
 
   * `digitalocean_client_id` and `digitalocean_api_key`: These
     credentials are available after logging in to your Digital Ocean
@@ -52,20 +52,17 @@ fields (all fields are required):
   * `digitalocean_region`: The geographic region for deploying new
     cloud servers. If unsure, use "New York 1".
 
-  * `private_key_file` and `public_key_file`: Pathnames to local files
-    (relative to your project's `config` directory) that contain the
-    private and public SSH keys to use for deployment. It's
-    recommended to generate a new keypair rather than using your
-    personal SSH keys, since Conjure currently copies the specified
-    private key to the server during deployment.
+  * `private_key_file` and `public_key_file` (optional): Pathnames to
+    local files (absolute paths, or relative to your project's
+    `config` directory) that contain the private and public SSH keys
+    to use for deployment. If these aren't specified, Conjure will try
+    to find identity files in `~/.ssh`.
 
 Here's an example conjure.yml file:
 
     digitalocean_client_id: XXXXXXXX
     digitalocean_api_key: XXXXXXXX
     digitalocean_region: New York 1
-    private_key_file: conjure_key
-    public_key_file: conjure_key.pub
 
 Finally, tell Conjure to deploy your app:
 
