@@ -5,7 +5,6 @@ module Conjure
         @volume = options[:volume]
         @branch = options[:branch]
         @origin_url = options[:origin_url]
-        @private_key = options[:private_key]
         @public_key = options[:public_key]
       end
 
@@ -34,16 +33,14 @@ module Conjure
       end
 
       def git_shell
-        @git_shell ||= @volume.shell.prepare({
+        @git_shell ||= ForwardedShell.new(:shell => @volume.shell.prepare({
           label: "git",
           setup_commands: [
             "apt-get install -y git",
-            "mkdir -p /root/.ssh; echo '#{@private_key}' > /root/.ssh/id_rsa",
-            "mkdir -p /root/.ssh; echo '#{@public_key}' > /root/.ssh/id_rsa.pub",
-            "chmod -R go-rwx /root/.ssh",
+            "mkdir -p /root/.ssh",
             "echo 'Host github.com\\n\\tStrictHostKeyChecking no\\n' >> /root/.ssh/config",
           ],
-        })
+        }), :public_key => @public_key)
       end
     end
   end

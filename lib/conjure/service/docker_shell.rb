@@ -1,6 +1,8 @@
 module Conjure
   module Service
     class DockerShell
+      attr_reader :docker_host
+
       def initialize(options)
         @docker_host = options[:docker_host]
         @image = options[:image]

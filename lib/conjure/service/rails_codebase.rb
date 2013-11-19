@@ -33,7 +33,6 @@ module Conjure
           :volume => volume,
           :branch => @branch,
           :origin_url => @github_url,
-          :private_key => Conjure.config.file_contents(:private_key_file).gsub("\n", "\\n"),
           :public_key => Conjure.config.file_contents(:public_key_file).gsub("\n", "\\n"),
         )
       end
