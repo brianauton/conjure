@@ -12,18 +12,13 @@ module Conjure
         @options = options
       end
     
-      def run(command, options = {})
-        stdout, stderr, exit_status = ["", "", nil]
+      def run(command, options = {}, &block)
+        result = nil
         session.open_channel do |channel|
           channel.request_pty
           channel.exec command do |c, success|
             raise "Failed to execute command via SSH" unless success
-            channel.on_data do |c, data|
-              yield data if block_given?
-              stdout << data
-            end
-            channel.on_extended_data { |c, type, data| stderr << data }
-            channel.on_request("exit-status") { |c, data| exit_status = data.read_long }
+            result = Result.new(channel, &block)
           end
           if options[:stream_stdin]
             channel.on_process do
@@ -36,9 +31,9 @@ module Conjure
         else
           session.loop
         end
-        Result.new stdout, stderr, exit_status
+        result
       end
-      
+
       def session
         session_options = {
           :auth_methods => ["publickey"],
@@ -58,8 +53,20 @@ module Conjure
       ensure
         system "stty -raw echo"
       end
+
+      class Result
+        attr_accessor :stdout, :stderr, :status
+        def initialize(channel)
+          @stdout, @stderr = "", ""
+          channel.on_data do |c, data|
+            yield data if block_given?
+            @stdout << data
+          end
+          channel.on_extended_data { |c, type, data| @stderr << data }
+          channel.on_request("exit-status") { |c, data| @status = data.read_long }
+        end
+      end
     end
 
-    Result = Struct.new(:stdout, :stderr, :status)
   end
 end
