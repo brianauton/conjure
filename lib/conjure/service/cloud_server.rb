@@ -39,12 +39,12 @@ module Conjure
 
       def existing_server
         server = connection.servers.find{|s| s.name == @name }
-        Conjure.log " [cloud] Using existing server #{@name}" if server
+        Log.info " [cloud] Using existing server #{@name}" if server
         server
       end
 
       def new_server
-        Conjure.log " [cloud] Launching new server #{@name}"
+        Log.info " [cloud] Launching new server #{@name}"
         connection.servers.bootstrap bootstrap_options.merge(fog_credentials)
       end
 

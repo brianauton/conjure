@@ -48,12 +48,12 @@ module Conjure
           File.open file, "w" do |f|
             f.write base_image.command("/usr/bin/mysqldump #{client_options}")
           end
-          Conjure.log "[export] #{File.size file} bytes exported to #{file}"
+          Log.info "[export] #{File.size file} bytes exported to #{file}"
         end
 
         def import(file)
           base_image.command "echo 'source /files/#{File.basename file}' | /usr/bin/mysql #{client_options}", files: [file]
-          Conjure.log "[import] #{File.size file} bytes imported from #{file}"
+          Log.info "[import] #{File.size file} bytes imported from #{file}"
         end
 
         def client_options

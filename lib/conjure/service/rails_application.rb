@@ -10,11 +10,11 @@ module Conjure
       end
 
       def deploy
-        Conjure.log "[deploy] Deploying #{@name}:#{@branch} to #{@environment}"
+        Log.info "[deploy] Deploying #{@name}:#{@branch} to #{@environment}"
         unless @test
           codebase.install
           rails.run
-          Conjure.log "[deploy] Application deployed to #{docker.ip_address}"
+          Log.info "[deploy] Application deployed to #{docker.ip_address}"
         end
       end
 

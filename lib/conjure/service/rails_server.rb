@@ -50,7 +50,7 @@ module Conjure
       end
 
       def install_gems
-        Conjure.log "[ rails] Installing gems"
+        Log.info "[ rails] Installing gems"
         base_image.command "cd #{@app_name}; bundle --deployment"
       end
 
@@ -59,17 +59,17 @@ module Conjure
       end
 
       def database_exists
-        Conjure.log "[ rails] Checking the database status"
+        Log.info "[ rails] Checking the database status"
         base_image.command("cd #{@app_name}; bundle exec rake db:version; true").include? "Current version:"
       end
 
       def migrate_database
-        Conjure.log "[ rails] Migrating the database"
+        Log.info "[ rails] Migrating the database"
         base_image.command "cd #{@app_name}; bundle exec rake db:migrate"
       end
 
       def initialize_database
-        Conjure.log "[ rails] Setting up the database"
+        Log.info "[ rails] Setting up the database"
         base_image.command "cd #{@app_name}; bundle exec rake db:setup"
       end
 

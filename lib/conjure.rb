@@ -4,8 +4,4 @@ module Conjure
   def self.config
     @config ||= Config.load Dir.pwd
   end
-
-  def self.log(message)
-    puts message
-  end
 end

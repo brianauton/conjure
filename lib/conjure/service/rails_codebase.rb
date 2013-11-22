@@ -42,12 +42,12 @@ module Conjure
       end
 
       def configure_database
-        Conjure.log "[  repo] Generating database.yml"
+        Log.info "[  repo] Generating database.yml"
         volume.write "config/database.yml", database_yml
       end
 
       def configure_logs
-        Conjure.log "[  repo] Configuring application logger"
+        Log.info "[  repo] Configuring application logger"
         setup = 'Rails.logger = Logger.new "#{Rails.root}/log/#{Rails.env}.log"'
         volume.write "config/initializers/z_conjure_logger.rb", setup
       end

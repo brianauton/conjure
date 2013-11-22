@@ -4,6 +4,12 @@ module Conjure
   class Command < Thor
     attr_accessor :application_options
 
+    class_option :verbose, :aliases => "-v", :type => :boolean, :desc => "Show details of low-level operations for debugging"
+    def initialize(*args)
+      super
+      Log.level = :debug if options[:verbose]
+    end
+
     desc "deploy", "Deploy the app"
     method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy"
     method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"

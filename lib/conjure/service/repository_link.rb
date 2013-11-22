@@ -19,12 +19,12 @@ module Conjure
       end
 
       def checkout_code
-        Conjure.log "[  repo] Checking out code from git"
+        Log.info "[  repo] Checking out code from git"
         git_shell.command "git clone -b #{@branch} #{@origin_url} #{code_path}"
       end
 
       def fetch_code_updates
-        Conjure.log "[  repo] Fetching code updates from git"
+        Log.info "[  repo] Fetching code updates from git"
         git_shell.command "cd #{code_path}; git reset --hard; git checkout #{@branch}; git pull"
       end
 

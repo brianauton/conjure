@@ -3,8 +3,6 @@ require 'digest/sha1'
 module Conjure
   module Service
     class DockerHost
-      VERBOSE = false
-
       def initialize(server_name)
         @server_name = server_name
       end
@@ -18,7 +16,7 @@ module Conjure
       end
 
       def new_docker_path
-        Conjure.log "[docker] Installing docker"
+        Log.info "[docker] Installing docker"
         server.run "dd if=/dev/zero of=/root/swapfile bs=1024 count=524288"
         server.run "mkswap /root/swapfile; swapon /root/swapfile"
         server.run "curl https://get.docker.io/gpg | apt-key add -"
@@ -31,7 +29,7 @@ module Conjure
       def existing_docker_path
         path = server.run("which docker").stdout.to_s.strip
         path = nil if path == ""
-        Conjure.log "[docker] Using installed #{path}" if path
+        Log.info "[docker] Using installed #{path}" if path
         path
       end
 
@@ -44,8 +42,8 @@ module Conjure
         full_command = "#{docker_path} #{command}"
         full_command = "nohup #{full_command}" if options[:nohup]
         full_command = "echo '#{shell_escape options[:stdin]}' | #{full_command}" if options[:stdin]
-        Conjure.log "   [scp] #{options[:files].inspect}" if VERBOSE and options[:files]
-        Conjure.log "   [ssh] #{full_command}" if VERBOSE
+        Log.debug "   [scp] #{options[:files].inspect}" if options[:files]
+        Log.debug "   [ssh] #{full_command}"
         result = server.run full_command, :stream_stdin => options[:stream_stdin], :files => options[:files], &block
         raise "Docker error: #{result.stdout} #{result.stderr}" unless result.status == 0
         result.stdout
@@ -117,7 +115,7 @@ module Conjure
 
       def run(command = "")
         unless running_container
-          Conjure.log "[docker] Starting #{@label}"
+          Log.info "[docker] Starting #{@label}"
           run_options = host_volume_options(@host_volumes)
           run_options += port_options(@ports)
           command = shell_command command if command != ""
@@ -127,7 +125,7 @@ module Conjure
             raise "Docker: #{@label} daemon exited with: #{output}"
           end
         end
-        Conjure.log "[docker] #{@label} is running at #{running_container.ip_address}"
+        Log.info "[docker] #{@label} is running at #{running_container.ip_address}"
         running_container
       end
 
@@ -157,7 +155,7 @@ module Conjure
 
       def build
         destroy_instances
-        Conjure.log "[docker] Building #{@label} image"
+        Log.info "[docker] Building #{@label} image"
         raise_build_errors(@host.command "build -t #{expected_image_name} -", stdin: dockerfile)
         @host.containers.destroy_all_stopped
       end
@@ -225,7 +223,7 @@ module Conjure
 
       def destroy_all(options)
         while container = find(:image_name => options[:image_name]) do
-          Conjure.log "[docker] Stopping #{options[:image_name]}"
+          Log.info "[docker] Stopping #{options[:image_name]}"
           host.command "stop #{container.id}"
           host.command "rm #{container.id}"
         end
