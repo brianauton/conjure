@@ -3,6 +3,7 @@ module Conjure
     class CloudServer
       require "fog"
       require "digest/md5"
+      require "pathname"
 
       def initialize(name)
         @name = name
