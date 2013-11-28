@@ -15,6 +15,7 @@ module Conjure
             "curl -L https://get.rvm.io | bash -s stable",
             "rvm install #{ruby_version}",
             "bash -c 'source /usr/local/rvm/scripts/rvm; rvm use #{ruby_version}@global --default'",
+            "ln -s /usr/local/rvm/rubies/*/lib/ruby/gems/* /usr/local/rvm/gems/default",
             "apt-get install -y #{apt_packages_required_for_gems.join ' '}",
             "echo 'deb http://us.archive.ubuntu.com/ubuntu/ precise universe' >>/etc/apt/sources.list",
             "apt-get install -y python-software-properties software-properties-common",
@@ -24,7 +25,7 @@ module Conjure
 
           ],
           environment: {
-            PATH:"/usr/local/rvm/gems/ruby-1.9.3-p448@global/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            PATH:"/usr/local/rvm/gems/default/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             RAILS_ENV: @rails_environment,
             GITHUB_TOKEN: ENV["GITHUB_TOKEN"],
             FRECKLE_SUBDOMAIN: "neomind",
@@ -38,7 +39,7 @@ module Conjure
           label: "rails_server",
           ports: [80],
           environment: {
-            PATH:"/usr/local/rvm/gems/ruby-1.9.3-p448@global/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            PATH:"/usr/local/rvm/gems/default/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
           },
         )
       end
