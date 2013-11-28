@@ -218,7 +218,10 @@ module Conjure
       end
 
       def destroy_all_stopped
-        host.command "rm `#{host.docker_path} ps -a -q`"
+        all_ids = host.command("ps -a -q").split("\n").map(&:strip)
+        running_ids = host.command("ps -q").split("\n").map(&:strip)
+        stopped_ids = all_ids - running_ids
+        host.command "rm #{stopped_ids.join ' '}"
       end
 
       def destroy_all(options)
