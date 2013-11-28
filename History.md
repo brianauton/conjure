@@ -1,3 +1,8 @@
+### Version 0.1.6
+2013-11-27
+
+* Support Docker 0.7
+
 ### Version 0.1.5
 2013-11-22
 
