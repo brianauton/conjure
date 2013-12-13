@@ -52,7 +52,7 @@ module Conjure
       end
 
       def account
-        @account ||= DigitalOceanAccount.new
+        @account ||= Provider.all(:cloud_account).first.new
       end
 
       def connection

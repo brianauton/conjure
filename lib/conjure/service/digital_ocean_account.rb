@@ -1,6 +1,9 @@
 module Conjure
   module Service
     class DigitalOceanAccount
+      include Conjure::Provider
+      provides :cloud_account
+
       def compute_options
         {
           :provider => :digitalocean,
