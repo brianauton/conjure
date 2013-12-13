@@ -56,9 +56,9 @@ module Conjure
       def bootstrap_options
         {
           name: @name,
-          flavor_id: flavor_id,
-          region_id: region_id,
-          image_id: image_id,
+          flavor_id: resource_id(:flavors, "512MB"),
+          region_id: resource_id(:regions, Conjure.config.digitalocean_region),
+          image_id: resource_id(:images, "Ubuntu 13.04 x64"),
         }
       end
 
@@ -70,16 +70,8 @@ module Conjure
         }
       end
 
-      def flavor_id
-        @flavor_id ||= connection.flavors.find{|f| f.name == "512MB"}.id
-      end
-
-      def region_id
-        @region_id ||= connection.regions.find{|r| r.name == Conjure.config.digitalocean_region}.id
-      end
-
-      def image_id
-        @image_id ||= connection.images.find{|r| r.name == "Ubuntu 13.04 x64"}.id
+      def resource_id(collection, name)
+        connection.send(collection).find{|i| i.name == name}.id
       end
 
       def set_fog_credentials
