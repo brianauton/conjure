@@ -46,21 +46,17 @@ module Conjure
 
       def new_server
         Log.info " [cloud] Launching new server #{@name}"
+        bootstrap_options = account.bootstrap_options.merge(:name => @name)
         options = prepare_bootstrap_options(bootstrap_options).merge(fog_credentials)
         connection.servers.bootstrap options
       end
 
-      def connection
-        @connection ||= Fog::Compute.new compute_options
+      def account
+        @account ||= DigitalOceanAccount.new
       end
 
-      def bootstrap_options
-        {
-          name: @name,
-          flavor_name: "512MB",
-          region_name: Conjure.config.digitalocean_region,
-          image_name: "Ubuntu 13.04 x64",
-        }
+      def connection
+        @connection ||= Fog::Compute.new account.compute_options
       end
 
       def add_resource_id(options, type)
@@ -75,14 +71,6 @@ module Conjure
         add_resource_id(options, :region)
         add_resource_id(options, :image)
         options
-      end
-
-      def compute_options
-        {
-          provider: :digitalocean,
-          digitalocean_api_key: Conjure.config.digitalocean_api_key,
-          digitalocean_client_id: Conjure.config.digitalocean_client_id,
-        }
       end
 
       def resource_id(collection, name)
