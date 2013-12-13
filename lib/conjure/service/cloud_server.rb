@@ -46,7 +46,8 @@ module Conjure
 
       def new_server
         Log.info " [cloud] Launching new server #{@name}"
-        connection.servers.bootstrap bootstrap_options.merge(fog_credentials)
+        options = prepare_bootstrap_options(bootstrap_options).merge(fog_credentials)
+        connection.servers.bootstrap options
       end
 
       def connection
@@ -56,10 +57,24 @@ module Conjure
       def bootstrap_options
         {
           name: @name,
-          flavor_id: resource_id(:flavors, "512MB"),
-          region_id: resource_id(:regions, Conjure.config.digitalocean_region),
-          image_id: resource_id(:images, "Ubuntu 13.04 x64"),
+          flavor_name: "512MB",
+          region_name: Conjure.config.digitalocean_region,
+          image_name: "Ubuntu 13.04 x64",
         }
+      end
+
+      def add_resource_id(options, type)
+        id = "#{type}_id".to_sym
+        name = "#{type}_name".to_sym
+        collection = "#{type}s".to_sym
+        options[id] = resource_id(collection, options[name]) if options[name]
+      end
+
+      def prepare_bootstrap_options(options)
+        add_resource_id(options, :flavor)
+        add_resource_id(options, :region)
+        add_resource_id(options, :image)
+        options
       end
 
       def compute_options
