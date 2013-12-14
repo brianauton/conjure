@@ -2,7 +2,14 @@ module Conjure
   module Service
     class DigitalOceanAccount
       include Conjure::Provider
-      provides :cloud_account
+
+      provides :cloud_account do
+        new if configured?
+      end
+
+      def self.configured?
+        Conjure.config.digitalocean_api_key and Conjure.config.digitalocean_client_id
+      end
 
       def compute_options
         {

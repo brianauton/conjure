@@ -5,18 +5,21 @@ module Conjure
     end
 
     def self.all(service_type)
-      (@providers && @providers[service_type]) || []
+      providers(service_type).map{|block| block.call}.flatten.compact
     end
 
-    def self.register_provider(service_type, provider_class)
+    def self.register_provider(service_type, &block)
+      providers(service_type) << block
+    end
+
+    def self.providers(service_type)
       @providers ||= {}
       @providers[service_type] ||= []
-      @providers[service_type] << provider_class
     end
 
     module ClassMethods
-      def provides(service_type)
-        Conjure::Provider.register_provider(service_type, self)
+      def provides(service_type, &block)
+        Conjure::Provider.register_provider(service_type, &block)
       end
     end
   end

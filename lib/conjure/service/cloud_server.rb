@@ -52,7 +52,7 @@ module Conjure
       end
 
       def account
-        @account ||= Provider.all(:cloud_account).first.new
+        @account ||= Provider.all(:cloud_account).first
       end
 
       def connection
