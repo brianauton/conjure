@@ -14,8 +14,7 @@ module Conjure
     end
 
     def method_missing(name)
-      return @options[name.to_s] if @options.has_key? name.to_s
-      super
+      @options[name.to_s]
     end
 
     def file_contents(name)
