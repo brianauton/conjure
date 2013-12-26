@@ -5,4 +5,8 @@ module Conjure
   def self.config
     @config ||= Config.load Dir.pwd
   end
+
+  def self.identity
+    @identity ||= Identity.new(config)
+  end
 end
