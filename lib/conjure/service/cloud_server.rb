@@ -10,20 +10,11 @@ module Conjure
 
       def run(command, options = {}, &block)
         set_fog_credentials
-        upload_files options[:files].to_a
+        file_set = RemoteFileSet.new(:shell => remote_shell, :files => options[:files])
+        file_set.upload
         result = remote_shell.run(command, :stream_stdin => options[:stream_stdin], &block)
-        remove_files options[:files].to_a
+        file_set.remove
         result
-      end
-
-      def upload_files(files)
-        dir_names = files.map{|local_path, remote_path| File.dirname remote_path}.uniq
-        run "mkdir -p #{dir_names.join ' '}" if dir_names.any?
-        files.each{|local_path, remote_path| server.scp local_path, remote_path}
-      end
-
-      def remove_files(files)
-        files.each{|local_path, remote_path| run "rm -f #{remote_path}"}
       end
 
       def server
