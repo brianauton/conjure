@@ -38,7 +38,7 @@ module Conjure
       end
 
       def volume
-        @volume ||= Volume.new(:docker_host => @host, :host_path => "/rails_app", :container_path => "/#{@app_name}")
+        @volume ||= Volume.new(:docker_host => @host, :host_path => "/rails_app", :container_path => "/application_root")
       end
 
       def configure_database
