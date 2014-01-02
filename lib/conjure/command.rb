@@ -57,7 +57,14 @@ module Conjure
     def application
       self.application_options ||= {}
       self.application_options[:origin] ||= github_url
+      self.application_options[:name] = name_from_origin(self.application_options[:origin])
+      self.application_options[:resource_pool] = resource_pool
       Service::RailsApplication.new self.application_options
+    end
+
+    def resource_pool
+      machine_name = "#{self.application_options[:name]}-production"
+      Service::ResourcePool.new(:machine_name => machine_name)
     end
 
     def github_url
@@ -67,6 +74,10 @@ module Conjure
     def git_origin_url(source_path)
       remote_info = `cd #{source_path}; git remote -v |grep origin`
       remote_info.match(/(git@github.com[^ ]+)/)[1]
+    end
+
+    def name_from_origin(origin)
+      origin.match(/\/([^.]+)\.git$/)[1]
     end
   end
 end
