@@ -1,10 +1,9 @@
 module Conjure
   module Service
     class RailsCodebase
-      def initialize(host, github_url, branch, app_name, rails_environment)
+      def initialize(host, github_url, branch, rails_environment)
         @github_url = github_url
         @branch = branch
-        @app_name = app_name
         @rails_environment = rails_environment
         @host = host
       end

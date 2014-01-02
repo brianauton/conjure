@@ -3,7 +3,6 @@ module Conjure
     class RailsApplication
       def initialize(options)
         @origin = options[:origin]
-        @name = options[:name]
         @branch = options[:branch] || "master"
         @environment = "production"
         @test = options[:test]
@@ -11,7 +10,7 @@ module Conjure
       end
 
       def deploy
-        Log.info "[deploy] Deploying #{@name}:#{@branch} to #{@environment}"
+        Log.info "[deploy] Deploying #{@branch} to #{@environment}"
         unless @test
           codebase.install
           rails.run
@@ -24,11 +23,11 @@ module Conjure
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.new @resource_pool, @origin, @branch, @name, @environment
+        @codebase ||= Service::RailsCodebase.new @resource_pool, @origin, @branch, @environment
       end
 
       def rails
-        @rails ||= Service::RailsServer.new @resource_pool, @name, @environment
+        @rails ||= Service::RailsServer.new @resource_pool, @environment
       end
     end
   end

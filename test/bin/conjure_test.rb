@@ -17,17 +17,17 @@ class ConjureCommandLineTest < Test
 
   test "allows specifying a branch to deploy with --branch" do
     result = run_local "conjure deploy --origin /myrepo.git --branch mybranch"
-    assert_match "Deploying myrepo:mybranch", result.standard_output
+    assert_match "Deploying mybranch", result.standard_output
   end
 
   test "allows specifying a branch to deploy with -b" do
     result = run_local "conjure deploy --origin /myrepo.git -b mybranch"
-    assert_match "Deploying myrepo:mybranch", result.standard_output
+    assert_match "Deploying mybranch", result.standard_output
   end
 
   test "defaults to deploying master if no branch given" do
     result = run_local "conjure deploy --origin /myrepo.git --test"
-    assert_match "Deploying myrepo:master", result.standard_output
+    assert_match "Deploying master", result.standard_output
   end
 
   require "open3"
