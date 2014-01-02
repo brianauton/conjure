@@ -1,11 +1,11 @@
 module Conjure
   module Service
     class RailsCodebase
-      def initialize(host, github_url, branch, rails_environment)
+      def initialize(resource_pool, github_url, branch, rails_environment)
         @github_url = github_url
         @branch = branch
         @rails_environment = rails_environment
-        @host = host
+        @resource_pool = resource_pool
       end
 
       def database_yml
@@ -37,7 +37,7 @@ module Conjure
       end
 
       def volume
-        @volume ||= Volume.new(:docker_host => @host, :host_path => "/rails_app", :container_path => "/application_root")
+        @volume ||= Volume.new(:resource_pool => @resource_pool, :host_path => "/rails_app", :container_path => "/application_root")
       end
 
       def configure_database
@@ -56,7 +56,7 @@ module Conjure
       end
 
       def database
-        @database ||= Database.new :docker_host => @host, :codebase => self
+        @database ||= Database.new :resource_pool => @resource_pool, :codebase => self
       end
     end
   end

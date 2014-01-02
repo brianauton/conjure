@@ -3,13 +3,13 @@ module Conjure
     class Database
       class Mysql
         def initialize(options)
-          @host = options[:docker_host]
+          @resource_pool = options[:resource_pool]
           @db_name = options[:database_name]
           @adapter_name = options[:adapter_name]
         end
 
         def base_image
-          @base_image ||= @host.shell.prepare(
+          @base_image ||= @resource_pool.shell.prepare(
             label: "mysql",
             setup_commands: [
               "apt-get install -y mysql-server mysql-client"

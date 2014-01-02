@@ -1,10 +1,10 @@
 module Conjure
   module Service
     class Volume
-      attr_reader :docker_host, :container_path
+      attr_reader :resource_pool, :container_path
 
       def initialize(options)
-        @docker_host = options[:docker_host]
+        @resource_pool = options[:resource_pool]
         @host_path = options[:host_path]
         @container_path = options[:container_path]
       end
@@ -18,7 +18,7 @@ module Conjure
       end
 
       def shell
-        @shell ||= @docker_host.shell.prepare(
+        @shell ||= @resource_pool.shell.prepare(
           :label => "volume",
           :host_volumes => {@host_path => @container_path},
         )

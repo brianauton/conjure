@@ -1,13 +1,13 @@
 module Conjure
   module Service
     class RailsServer
-      def initialize(host, rails_environment)
-        @host = host
+      def initialize(resource_pool, rails_environment)
+        @resource_pool = resource_pool
         @rails_environment = rails_environment
       end
 
       def base_image
-        @base_image ||= @host.shell.prepare(
+        @base_image ||= @resource_pool.shell.prepare(
           label: "rails_base",
           setup_commands: [
             "apt-get install -y curl git",
