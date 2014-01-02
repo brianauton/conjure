@@ -52,10 +52,6 @@ module Conjure
         volume.write "config/initializers/z_conjure_logger.rb", setup
       end
 
-      def database_name
-        "#{@app_name}_#{@rails_environment}"
-      end
-
       def gem_names
         volume.read("Gemfile").scan(/gem ['"]([^'"]+)['"]/).flatten
       end

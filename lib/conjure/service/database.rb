@@ -6,7 +6,7 @@ module Conjure
           if options[:codebase].gem_names.include? gem_name
             return service_class.new(
               :docker_host => options[:docker_host],
-              :database_name => options[:codebase].database_name,
+              :database_name => "rails_app_db",
               :adapter_name => adapters_by_gem[gem_name],
             )
           end
