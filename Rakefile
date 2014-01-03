@@ -1,10 +1,10 @@
 #!/usr/bin/env rake
 require "bundler/gem_tasks"
-require "rake/testtask"
- 
-Rake::TestTask.new do |t|
-  t.libs += ["test", "lib/conjure"]
-  t.test_files = FileList["test/**/*_test.rb"]
+require "rspec/core/rake_task"
+
+RSpec::Core::RakeTask.new do |t|
+  t.ruby_opts = ["-w"]
+  t.verbose = false
 end
 
-task :default => :test
+task :default => :spec
