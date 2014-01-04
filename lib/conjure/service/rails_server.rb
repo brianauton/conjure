@@ -90,12 +90,6 @@ module Conjure
       rescue Interrupt => e
       end
 
-      def rake(command)
-        base_image.command "cd application_root; bundle exec rake #{command}" do |stdout, stderr|
-          print stdout
-        end
-      end
-
       def console
         base_image.command "cd application_root; bundle exec rails console", :stream_stdin => true do |stdout, stderr|
           print stdout

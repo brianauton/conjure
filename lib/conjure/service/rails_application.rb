@@ -29,6 +29,10 @@ module Conjure
       def rails
         @rails ||= Service::RailsServer.new @resource_pool, @environment
       end
+
+      def shell
+        rails.base_image
+      end
     end
   end
 end

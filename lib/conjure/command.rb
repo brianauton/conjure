@@ -42,7 +42,10 @@ module Conjure
 
     desc "rake [ARGUMENTS...]", "Run the specified rake task on the deployed application"
     def rake(*arguments)
-      application.rails.rake arguments.join(" ")
+      task = arguments.join(" ")
+      Service::RakeTask.new(:task => task, :shell => application.shell) do |stdout|
+        print stdout
+      end
     end
 
     desc "console", "Start a console on the deployed application"
