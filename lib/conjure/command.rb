@@ -37,7 +37,9 @@ module Conjure
     method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
     method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
-      application.rails.log :lines => options[:num], :tail => options[:tail]
+      Service::RailsLogView.new(:shell => application.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
+        print stdout
+      end
     end
 
     desc "rake [ARGUMENTS...]", "Run the specified rake task on the deployed application"

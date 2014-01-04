@@ -79,17 +79,6 @@ module Conjure
         server_image.run "cd application_root; rm -f tmp/pids/server.pid; bundle exec rails server -p 80"
       end
 
-      def log(options = {})
-        arguments = []
-        arguments << "-n #{options[:lines]}" if options[:lines]
-        arguments << "-f" if options[:tail]
-        log_file = "application_root/log/#{@rails_environment}.log"
-        base_image.command "tail #{arguments.join ' '} #{log_file}" do |stdout, stderr|
-          puts stdout
-        end
-      rescue Interrupt => e
-      end
-
       def ruby_version
         Conjure.config.file_contents("../.ruby-version").strip
       end
