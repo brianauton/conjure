@@ -15,8 +15,8 @@ module Conjure
         )
       end
 
-      def command(*args)
-        (@image || default_image).command *args
+      def command(*args, &block)
+        (@image || default_image).command *args, &block
       end
 
       def run(*args)
