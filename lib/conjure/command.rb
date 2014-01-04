@@ -50,7 +50,9 @@ module Conjure
 
     desc "console", "Start a console on the deployed application"
     def console
-      application.rails.console
+      Service::RailsConsole.new(:shell => application.shell) do |stdout|
+        print stdout
+      end
     end
 
     default_task :help

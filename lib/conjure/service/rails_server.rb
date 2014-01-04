@@ -90,12 +90,6 @@ module Conjure
       rescue Interrupt => e
       end
 
-      def console
-        base_image.command "cd application_root; bundle exec rails console", :stream_stdin => true do |stdout, stderr|
-          print stdout
-        end
-      end
-
       def ruby_version
         Conjure.config.file_contents("../.ruby-version").strip
       end
