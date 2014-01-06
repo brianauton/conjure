@@ -2,8 +2,6 @@ require "thor"
 
 module Conjure
   class Command < Thor
-    attr_accessor :deployment_options
-
     class_option :verbose, :aliases => "-v", :type => :boolean, :desc => "Show details of low-level operations for debugging"
     def initialize(*args)
       super
@@ -15,11 +13,6 @@ module Conjure
     method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     def deploy
-      self.deployment_options = {
-        :branch => options[:branch],
-        :test => options[:test],
-        :origin => options[:origin],
-      }
       deployment.deploy
     end
 
@@ -61,26 +54,21 @@ module Conjure
 
     private
 
+    def application
+      @application ||= Application.new(:path => Dir.pwd, :origin_url => options[:origin])
+    end
+
     def deployment
-      self.deployment_options ||= {}
-      self.deployment_options[:origin] ||= github_url
-      self.deployment_options[:resource_pool] = resource_pool
-      Service::RailsDeployment.new self.deployment_options
+      @deployment ||= Service::RailsDeployment.new({
+        :branch => options[:branch],
+        :origin => application.origin_url,
+        :resource_pool => resource_pool,
+        :test => options[:test],
+      })
     end
 
     def resource_pool
-      application_name = self.deployment_options[:origin].match(/\/([^.]+)\.git$/)[1]
-      machine_name = "#{application_name}-production"
-      Service::ResourcePool.new(:machine_name => machine_name)
-    end
-
-    def github_url
-      git_origin_url Dir.pwd
-    end
-
-    def git_origin_url(source_path)
-      remote_info = `cd #{source_path}; git remote -v |grep origin`
-      remote_info.match(/(git@github.com[^ ]+)/)[1]
+      Service::ResourcePool.new(:machine_name => "#{application.name}-production")
     end
   end
 end
