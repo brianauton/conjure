@@ -6,7 +6,7 @@ module Conjure
         @branch = options[:branch] || "master"
         @environment = "production"
         @test = options[:test]
-        @resource_pool = options[:resource_pool]
+        @target = options[:target]
       end
 
       def deploy
@@ -14,7 +14,7 @@ module Conjure
         unless @test
           codebase.install
           rails.run
-          Log.info "[deploy] Application deployed to #{@resource_pool.ip_address}"
+          Log.info "[deploy] Application deployed to #{@target.ip_address}"
         end
       end
 
@@ -23,11 +23,11 @@ module Conjure
       end
 
       def codebase
-        @codebase ||= Service::RailsCodebase.new @resource_pool, @origin, @branch, @environment
+        @codebase ||= Service::RailsCodebase.new @target, @origin, @branch, @environment
       end
 
       def rails
-        @rails ||= Service::RailsServer.new @resource_pool, @environment
+        @rails ||= Service::RailsServer.new @target, @environment
       end
 
       def shell

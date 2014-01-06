@@ -62,13 +62,13 @@ module Conjure
       @deployment ||= Service::RailsDeployment.new({
         :branch => options[:branch],
         :origin => application.origin_url,
-        :resource_pool => resource_pool,
+        :target => target,
         :test => options[:test],
       })
     end
 
-    def resource_pool
-      Service::ResourcePool.new(:machine_name => "#{application.name}-production")
+    def target
+      Target.new(:machine_name => "#{application.name}-production")
     end
   end
 end

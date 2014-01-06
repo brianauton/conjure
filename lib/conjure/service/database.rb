@@ -5,7 +5,7 @@ module Conjure
         services_by_gem.each do |gem_name, service_class|
           if options[:codebase].gem_names.include? gem_name
             return service_class.new(
-              :resource_pool => options[:resource_pool],
+              :target => options[:target],
               :database_name => "rails_app_db",
               :adapter_name => adapters_by_gem[gem_name],
             )

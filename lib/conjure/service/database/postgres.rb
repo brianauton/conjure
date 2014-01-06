@@ -3,12 +3,12 @@ module Conjure
     class Database
       class Postgres
         def initialize(options)
-          @resource_pool = options[:resource_pool]
+          @target = options[:target]
           @db_name = options[:database_name]
         end
 
         def base_image
-          @base_image ||= @resource_pool.shell.prepare(
+          @base_image ||= @target.shell.prepare(
             label: "postgres",
             setup_commands: [
               "apt-get install -y python-software-properties software-properties-common",

@@ -3,13 +3,13 @@ module Conjure
     class Database
       class Mysql
         def initialize(options)
-          @resource_pool = options[:resource_pool]
+          @target = options[:target]
           @db_name = options[:database_name]
           @adapter_name = options[:adapter_name]
         end
 
         def base_image
-          @base_image ||= @resource_pool.shell.prepare(
+          @base_image ||= @target.shell.prepare(
             label: "mysql",
             setup_commands: [
               "apt-get install -y mysql-server mysql-client"
