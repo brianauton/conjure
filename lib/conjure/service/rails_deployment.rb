@@ -1,6 +1,6 @@
 module Conjure
   module Service
-    class RailsApplication
+    class RailsDeployment
       def initialize(options)
         @origin = options[:origin]
         @branch = options[:branch] || "master"

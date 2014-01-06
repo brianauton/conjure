@@ -2,7 +2,7 @@ require "thor"
 
 module Conjure
   class Command < Thor
-    attr_accessor :application_options
+    attr_accessor :deployment_options
 
     class_option :verbose, :aliases => "-v", :type => :boolean, :desc => "Show details of low-level operations for debugging"
     def initialize(*args)
@@ -15,29 +15,29 @@ module Conjure
     method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     def deploy
-      self.application_options = {
+      self.deployment_options = {
         :branch => options[:branch],
         :test => options[:test],
         :origin => options[:origin],
       }
-      application.deploy
+      deployment.deploy
     end
 
     desc "import FILE", "Import the production database from a postgres SQL dump"
     def import(file)
-      application.database.import file
+      deployment.database.import file
     end
 
     desc "export FILE", "Export the production database to a postgres SQL dump"
     def export(file)
-      application.database.export file
+      deployment.database.export file
     end
 
     desc "log", "Display the Rails log from the deployed application"
     method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
     method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
-      Service::RailsLogView.new(:shell => application.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
+      Service::RailsLogView.new(:shell => deployment.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
         print stdout
       end
     end
@@ -45,14 +45,14 @@ module Conjure
     desc "rake [ARGUMENTS...]", "Run the specified rake task on the deployed application"
     def rake(*arguments)
       task = arguments.join(" ")
-      Service::RakeTask.new(:task => task, :shell => application.shell) do |stdout|
+      Service::RakeTask.new(:task => task, :shell => deployment.shell) do |stdout|
         print stdout
       end
     end
 
     desc "console", "Start a console on the deployed application"
     def console
-      Service::RailsConsole.new(:shell => application.shell) do |stdout|
+      Service::RailsConsole.new(:shell => deployment.shell) do |stdout|
         print stdout
       end
     end
@@ -61,15 +61,15 @@ module Conjure
 
     private
 
-    def application
-      self.application_options ||= {}
-      self.application_options[:origin] ||= github_url
-      self.application_options[:resource_pool] = resource_pool
-      Service::RailsApplication.new self.application_options
+    def deployment
+      self.deployment_options ||= {}
+      self.deployment_options[:origin] ||= github_url
+      self.deployment_options[:resource_pool] = resource_pool
+      Service::RailsDeployment.new self.deployment_options
     end
 
     def resource_pool
-      application_name = self.application_options[:origin].match(/\/([^.]+)\.git$/)[1]
+      application_name = self.deployment_options[:origin].match(/\/([^.]+)\.git$/)[1]
       machine_name = "#{application_name}-production"
       Service::ResourcePool.new(:machine_name => machine_name)
     end
