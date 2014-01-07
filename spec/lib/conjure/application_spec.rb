@@ -20,4 +20,18 @@ describe Conjure::Application do
     application = Conjure::Application.new(:origin_url => "git@github.com:myname/myapp.git")
     expect(application.name).to eq("myapp")
   end
+
+  describe "#instances" do
+    it "has none when none have been created" do
+      application = Conjure::Application.new
+      expect(application.instances).to be_empty
+    end
+  end
+
+  describe "#data_sets" do
+    it "has none when none have been created" do
+      application = Conjure::Application.new
+      expect(application.data_sets).to be_empty
+    end
+  end
 end
