@@ -1,4 +1,5 @@
 require "conjure/service/remote_shell"
+require "conjure/log"
 require "mock/net_ssh"
 
 describe Conjure::Service::RemoteShell do
@@ -8,6 +9,7 @@ describe Conjure::Service::RemoteShell do
   before do
     Ssh.reset
     RemoteShell.ssh_service = Ssh
+    allow(Conjure::Log).to receive(:debug)
   end
 
   describe "#run" do

@@ -13,6 +13,7 @@ module Conjure
       end
     
       def run(command, options = {}, &block)
+        Log.debug "   [ssh] #{command}"
         result = nil
         session.open_channel do |channel|
           channel.request_pty
