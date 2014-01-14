@@ -16,7 +16,7 @@ module Conjure
       def command(c)
         container = @shell.run "/usr/sbin/sshd -D -e"
         escaped_command = @shell.docker_host.shell_escape c
-        ssh_command = "ssh -A -o StrictHostKeyChecking=no #{container.ip_address} '#{escaped_command}'"
+        ssh_command = "ssh -A -o StrictHostKeyChecking=no -o PasswordAuthentication=no #{container.ip_address} '#{escaped_command}'"
         result = @shell.docker_host.server.run ssh_command
         result.stdout
       end

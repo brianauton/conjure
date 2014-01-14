@@ -20,7 +20,8 @@ module Conjure
 
       def checkout_code
         Log.info "[  repo] Checking out code from git"
-        git_shell.command "git clone -b #{@branch} #{@origin_url} #{code_path}"
+        output = git_shell.command "git clone -b #{@branch} #{@origin_url} #{code_path}"
+        raise "Access denied to git repo" if output.include? "Permission denied"
       end
 
       def fetch_code_updates
