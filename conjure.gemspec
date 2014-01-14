@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files = Dir.glob("lib/**/*") + ["README.md", "History.md", "License.txt"]
   s.require_path = "lib"
   s.executables = ["conjure"]
-  s.add_dependency "fog", ">= 1.15.0"
+  s.add_dependency "fog", ">= 1.19.0"
   s.add_dependency "thor"
   s.add_dependency "unf"
   s.add_development_dependency "rspec", ">= 3.0.0.beta1"
