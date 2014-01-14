@@ -1,3 +1,8 @@
+### Version 0.1.7
+2014-1-14
+
+* Improvements to error handling and verbose output
+
 ### Version 0.1.6
 2013-11-27
 
