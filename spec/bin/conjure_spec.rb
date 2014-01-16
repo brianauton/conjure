@@ -13,21 +13,6 @@ describe "conjure command line" do
     expect(result.standard_output).to eq("")
   end
 
-  it "allows specifying a branch to deploy with --branch" do
-    result = run_local "conjure deploy --origin /myrepo.git --branch mybranch"
-    expect(result.standard_output).to match("Deploying mybranch")
-  end
-
-  it "allows specifying a branch to deploy with -b" do
-    result = run_local "conjure deploy --origin /myrepo.git -b mybranch"
-    expect(result.standard_output).to match("Deploying mybranch")
-  end
-
-  it "defaults to deploying master if no branch given" do
-    result = run_local "conjure deploy --origin /myrepo.git --test"
-    expect(result.standard_output).to match("Deploying master")
-  end
-
   require "open3"
   def run_local(text)
     result = Open3.capture3 "ruby -Ilib bin/#{text}"
