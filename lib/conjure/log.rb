@@ -18,5 +18,9 @@ module Conjure
     def self.debug(message)
       info message if @level == :debug
     end
+
+    def self.clear
+      @history = ""
+    end
   end
 end
