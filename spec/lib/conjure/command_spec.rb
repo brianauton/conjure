@@ -8,8 +8,9 @@ describe Conjure::Command do
   end
 
   it "notifies on stderr if an unknown command is given" do
-    stderr = capture_stderr { invoke_with_arguments "invalid_command" }
-    expect(stderr).to include("Could not find command")
+    expect do
+      invoke_with_arguments "invalid_command"
+    end.to raise_error(Thor::UndefinedCommandError)
   end
 
   describe "'deploy' command" do
@@ -39,13 +40,5 @@ describe Conjure::Command do
     $stdout.string
   ensure
     $stdout = STDOUT
-  end
-
-  def capture_stderr
-    $stderr = StringIO.new
-    yield
-    $stderr.string
-  ensure
-    $stderr = STDERR
   end
 end
