@@ -2,14 +2,25 @@ module Conjure
   class Log
     class << self
       attr_accessor :level
+      attr_accessor :capture
+      attr_reader :history
     end
 
     def self.info(message)
-      puts message
+      if @capture
+        @history ||= ""
+        @history << "#{message}\n"
+      else
+        puts message
+      end
     end
 
     def self.debug(message)
-      puts message if @level == :debug
+      info message if @level == :debug
+    end
+
+    def self.clear
+      @history = ""
     end
   end
 end

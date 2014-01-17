@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "fog", ">= 1.19.0"
   s.add_dependency "thor"
   s.add_dependency "unf"
+  s.add_development_dependency "guard-rspec"
   s.add_development_dependency "rspec", ">= 3.0.0.beta1"
   s.add_development_dependency "rake"
 end
