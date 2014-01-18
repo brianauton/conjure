@@ -1,6 +1,6 @@
 module Conjure
   class Instance
-    def self.find(options = {})
+    def self.all(options = {})
       []
     end
   end

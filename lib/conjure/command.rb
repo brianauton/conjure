@@ -55,7 +55,7 @@ module Conjure
     private
 
     def application
-      @application ||= Application.new(:path => Dir.pwd, :origin_url => options[:origin])
+      @application ||= Application.find(:path => Dir.pwd, :origin_url => options[:origin])
     end
 
     def deployment

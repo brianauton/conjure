@@ -2,13 +2,12 @@ module Conjure
   class Application
     attr_reader :origin_url, :name
 
-    def initialize(options = {})
-      @origin_url = options[:origin_url] || find_origin_url(options[:path])
-      @name = find_name(@origin_url) if @origin_url
+    def self.find(options = {})
+      new(options)
     end
 
     def instances
-      Instance.find(:application => self)
+      Instance.all(:application => self)
     end
 
     def data_sets
@@ -16,6 +15,11 @@ module Conjure
     end
 
     private
+
+    def initialize(options = {})
+      @origin_url = options[:origin_url] || find_origin_url(options[:path])
+      @name = find_name(@origin_url) if @origin_url
+    end
 
     def find_name(origin_url)
       match = origin_url.match(/\/([^.]+)\.git$/)
