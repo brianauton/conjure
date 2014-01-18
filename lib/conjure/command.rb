@@ -50,6 +50,11 @@ module Conjure
       end
     end
 
+    desc "show", "Show info on deployed instances"
+    def show
+      puts "Running instances: " + application.instances.map(&:name).join(", ")
+    end
+
     default_task :help
 
     private

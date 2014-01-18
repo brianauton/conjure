@@ -30,6 +30,18 @@ describe Conjure::Command do
     end
   end
 
+  describe "'show' command" do
+    it "shows all instances for the current application" do
+      instance1 = double(:name => "instance1")
+      instance2 = double(:name => "instance2")
+      application = double(:instances => [instance1, instance2])
+      expect(Conjure::Application).to receive(:find).and_return(application)
+      stdout = capture_stdout { invoke_with_arguments "show" }
+      expect(stdout).to include("instance1")
+      expect(stdout).to include("instance2")
+    end
+  end
+
   def invoke_with_arguments(arguments)
     Conjure::Command.start(arguments.split " ")
   end
