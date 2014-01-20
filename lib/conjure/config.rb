@@ -3,8 +3,12 @@ module Conjure
     def self.load(root_path)
       require "ostruct"
       config_path = File.join root_path, "config", "conjure.yml"
-      data = YAML.load_file config_path
-      data["config_path"] = File.dirname config_path
+      if File.exists? config_path
+        data = YAML.load_file config_path
+        data["config_path"] = File.dirname config_path
+      else
+        data = {}
+      end
       new data
     end
 
