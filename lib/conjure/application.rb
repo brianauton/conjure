@@ -7,7 +7,7 @@ module Conjure
     end
 
     def instances
-      Instance.all(:application => self)
+      Instance.where(:application => self)
     end
 
     def data_sets

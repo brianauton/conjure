@@ -52,7 +52,9 @@ module Conjure
 
     desc "show", "Show info on deployed instances"
     def show
-      puts "Running instances: " + application.instances.map(&:name).join(", ")
+      puts "Running instances: " + (application.instances.map do |instance|
+        "#{instance.rails_environment} at #{instance.ip_address}"
+      end.join(", "))
     end
 
     default_task :help

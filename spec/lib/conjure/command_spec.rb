@@ -32,13 +32,13 @@ describe Conjure::Command do
 
   describe "'show' command" do
     it "shows all instances for the current application" do
-      instance1 = double(:name => "instance1")
-      instance2 = double(:name => "instance2")
+      instance1 = double(:rails_environment => "staging", :ip_address => "1.2.3.4")
+      instance2 = double(:rails_environment => "development", :ip_address => "5.6.7.8")
       application = double(:instances => [instance1, instance2])
       expect(Conjure::Application).to receive(:find).and_return(application)
       stdout = capture_stdout { invoke_with_arguments "show" }
-      expect(stdout).to include("instance1")
-      expect(stdout).to include("instance2")
+      expect(stdout).to include("staging")
+      expect(stdout).to include("development")
     end
   end
 

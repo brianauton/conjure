@@ -22,9 +22,11 @@ describe Conjure::Application do
   end
 
   describe "#instances" do
-    it "has none when none have been created" do
+    it "creates a collection of instances scoped to the application" do
       application = Conjure::Application.new
-      expect(application.instances).to be_empty
+      instances = double
+      expect(Conjure::Instance).to receive(:where).with(:application => application) { instances }
+      expect(application.instances).to eq(instances)
     end
   end
 
