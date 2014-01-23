@@ -50,15 +50,15 @@ module Conjure::View
       expect(view.render).to include("on fire")
     end
 
-    def build_application_view(application_attributes = {})
+    def build_application_view(attributes = {})
       defaults = {:instances => [], :origin => "none"}
-      application = double(defaults.merge application_attributes)
+      application = instance_double(Conjure::Application, defaults.merge(attributes))
       ApplicationView.new(application)
     end
 
     def stub_instance(attributes)
       defaults = {:rails_environment => "", :ip_address => "", :status => ""}
-      double(defaults.merge attributes)
+      instance_double(Conjure::Instance, defaults.merge(attributes))
     end
   end
 end
