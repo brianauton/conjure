@@ -12,6 +12,10 @@ module Conjure
       Collection.new(options)
     end
 
+    def status
+      "running"
+    end
+
     class Collection
       include Enumerable
 

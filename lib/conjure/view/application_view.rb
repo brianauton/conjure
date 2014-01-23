@@ -20,10 +20,12 @@ module Conjure
       end
 
       def instances_content
-        items = @application.instances.map do |instance|
-          "#{instance.rails_environment} at #{instance.ip_address}"
+        content = ["Deployed Instances:"]
+        content += @application.instances.map do |instance|
+          "#{instance.ip_address} #{instance.status} #{instance.rails_environment}"
         end
-        "Running instances: #{items.join ', '}"
+        content << "(none)" unless @application.instances.any?
+        content.join "\n"
       end
     end
   end
