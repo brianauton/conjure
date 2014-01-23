@@ -21,11 +21,20 @@ module Conjure
 
       def instances_content
         content = ["Deployed Instances:"]
-        content += @application.instances.map do |instance|
-          "#{instance.ip_address} #{instance.status} #{instance.rails_environment}"
-        end
+        content << instances_table
         content << "(none)" unless @application.instances.any?
         content.join "\n"
+      end
+
+      def instances_table
+        data = @application.instances.map do |instance|
+          {
+            "Address" => instance.ip_address,
+            "Environment" => instance.rails_environment,
+            "Status" => instance.status,
+          }
+        end
+        TableView.new(data).render
       end
     end
   end
