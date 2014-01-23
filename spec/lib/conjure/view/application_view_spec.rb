@@ -3,8 +3,28 @@ require "conjure"
 module Conjure::View
   describe ApplicationView do
     let(:application_attributes) { {} }
-    let(:application) { double(application_attributes) }
+    let(:application) do
+      defaults = {:instances => [], :origin => "none"}
+      double(defaults.merge application_attributes)
+    end
     let(:rendered_output) { ApplicationView.new(application).render }
+
+    it "includes intro" do
+      expect(rendered_output).to include("Showing application status")
+    end
+
+    it "includes Conjure name and version" do
+      stub_const("Conjure::VERSION", "9.8.7")
+      expect(rendered_output).to include("Conjure v9.8.7")
+    end
+
+    describe "application info section" do
+      let(:application_attributes) { {:origin => "myorigin"} }
+
+      it "should include basic info about the application" do
+        expect(rendered_output).to match(/^Origin[ ]+myorigin/)
+      end
+    end
 
     describe "view of application's instances" do
       let :application_attributes do
