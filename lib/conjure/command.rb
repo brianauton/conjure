@@ -50,18 +50,23 @@ module Conjure
       end
     end
 
+    desc "show", "Show info on deployed instances"
+    def show
+      puts View::ApplicationView.new(application).render
+    end
+
     default_task :help
 
     private
 
     def application
-      @application ||= Application.new(:path => Dir.pwd, :origin_url => options[:origin])
+      @application ||= Application.find(:path => Dir.pwd, :origin => options[:origin])
     end
 
     def deployment
       @deployment ||= Service::RailsDeployment.new({
         :branch => options[:branch],
-        :origin => application.origin_url,
+        :origin => application.origin,
         :target => target,
         :test => options[:test],
       })

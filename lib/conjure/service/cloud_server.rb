@@ -25,13 +25,11 @@ module Conjure
       end
 
       def ip_address
-        @server.public_ip_address
+        server.public_ip_address
       end
 
       def existing_server
-        server = connection.servers.find{|s| s.name == @name }
-        Log.info " [cloud] Using existing server #{@name}" if server
-        server
+        @existing_server ||= connection.servers.find{|s| s.name == @name } if connection
       end
 
       def new_server
@@ -46,7 +44,7 @@ module Conjure
       end
 
       def connection
-        @connection ||= Fog::Compute.new account.compute_options
+        @connection ||= Fog::Compute.new account.compute_options if account
       end
 
       def add_resource_id(options, type)

@@ -30,6 +30,14 @@ describe Conjure::Command do
     end
   end
 
+  describe "'show' command" do
+    it "renders an ApplicationView to stdout" do
+      allow(Conjure::View::ApplicationView).to receive(:new) { double(:render => "output") }
+      output = capture_stdout { invoke_with_arguments "show" }
+      expect(output).to eq("output\n")
+    end
+  end
+
   def invoke_with_arguments(arguments)
     Conjure::Command.start(arguments.split " ")
   end
