@@ -1,3 +1,9 @@
+### Version 0.1.8
+2014-1-24
+
+* Add `show` command to list deployed instances
+* Fix dockerfile error caused by unset environment variables
+
 ### Version 0.1.7
 2014-1-14
 
