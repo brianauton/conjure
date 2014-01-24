@@ -141,11 +141,17 @@ module Conjure
 
       def dockerfile
         lines = ["FROM #{base_image_name}"]
-        lines += @environment.map{|k, v| "ENV #{k} #{v}"} if @environment
+        lines += dockerfile_environment_entries
         lines += @setup_commands.map{|c| "RUN #{c}"}
         lines << "VOLUME #{@volumes.inspect}" if @volumes.to_a.any?
         lines << "ENTRYPOINT #{@daemon_command}" if @daemon_command
         lines.join "\n"
+      end
+
+      def dockerfile_environment_entries
+        @environment.to_a.map do |k, v|
+          "ENV #{k} #{v}" if v.to_s != ""
+        end.compact
       end
 
       def base_image_name
