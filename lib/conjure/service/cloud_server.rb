@@ -29,9 +29,11 @@ module Conjure
       end
 
       def existing_server
-        server = connection.servers.find{|s| s.name == @name } if connection
-        Log.info " [cloud] Using existing server #{@name}" if server
-        server
+        if !@existing_server
+          @existing_server = connection.servers.find{|s| s.name == @name } if connection
+          Log.info " [cloud] Using existing server #{@name}" if @existing_server
+        end
+        @existing_server
       end
 
       def new_server

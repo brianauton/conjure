@@ -5,6 +5,7 @@ module Conjure
     class ApplicationView
       def initialize(application)
         @application = application
+        @instances = @application.instances
       end
 
       def render
@@ -22,12 +23,12 @@ module Conjure
       def instances_content
         content = ["Deployed Instances:"]
         content << instances_table
-        content << "(none)" unless @application.instances.any?
+        content << "(none)" unless @instances.any?
         content.join "\n"
       end
 
       def instances_table
-        data = @application.instances.map do |instance|
+        data = @instances.map do |instance|
           {
             "Address" => instance.ip_address,
             "Environment" => instance.rails_environment,
