@@ -23,15 +23,14 @@ module Conjure
         @application = options[:application]
       end
 
-      def server
-        @server ||= Service::CloudServer.new("#{@application.name}-production") if @application
-      end
-
       def each(&block)
-        if server and server.existing_server
+        return unless @application
+        Service::CloudServer.each_with_name_prefix("#{@application.name}-") do |server|
+          match = server.name.match(/^#{@application.name}-([^-]+)$/)
+          return unless match
           yield Instance.new(
             :application => @application,
-            :rails_environment => "production",
+            :rails_environment => match[1],
             :ip_address => server.ip_address
           )
         end
