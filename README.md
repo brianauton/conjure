@@ -116,3 +116,9 @@ Open a console on the deployed application.
 Run a rake task on the deployed application and show the output.
 
     conjure rake [ARGUMENTS...]
+
+#### Show
+
+List the current status of all deployed instances of your command.
+
+    conjure show
