@@ -1,15 +1,25 @@
 module Conjure
   class Instance
-    attr_reader :origin, :ip_address, :rails_environment
-
     def initialize(options)
       @origin = options[:origin]
-      @ip_address = options[:ip_address]
       @rails_environment = options[:rails_environment]
+      @server = options[:server]
     end
 
     def self.where(options = {})
       Collection.new(options)
+    end
+
+    def origin
+      @origin ||= @server.name.split("-")[0]
+    end
+
+    def rails_environment
+      @rails_environment ||= @server.name.split("-")[1]
+    end
+
+    def ip_address
+      @server.ip_address
     end
 
     def status
@@ -31,12 +41,7 @@ module Conjure
         return unless @origin
         Service::CloudServer.each_with_name_prefix("#{application_name}-") do |server|
           match = server.name.match(/^#{application_name}-([^-]+)$/)
-          return unless match
-          yield Instance.new(
-            :origin => @origin,
-            :rails_environment => match[1],
-            :ip_address => server.ip_address
-          )
+          yield Instance.new(:server => server) if match
         end
       end
     end
