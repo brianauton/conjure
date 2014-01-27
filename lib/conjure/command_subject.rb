@@ -7,5 +7,9 @@ module Conjure
     def application
       @application ||= Application.find(:path => Dir.pwd, :origin => @origin)
     end
+
+    def instance
+      @instance ||= application.instances.first
+    end
   end
 end

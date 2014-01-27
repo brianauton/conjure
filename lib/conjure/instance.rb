@@ -22,6 +22,18 @@ module Conjure
       @server.ip_address
     end
 
+    def shell
+      rails_server.base_image
+    end
+
+    def rails_server
+      @rails_server ||= Service::RailsServer.new target, rails_environment
+    end
+
+    def target
+      @target ||= Target.new(:machine_name => @server.name)
+    end
+
     def status
       "running"
     end

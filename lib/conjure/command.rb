@@ -30,7 +30,7 @@ module Conjure
     method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
     method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
-      Service::RailsLogView.new(:shell => deployment.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
+      Service::RailsLogView.new(:shell => command_subject.instance.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
         print stdout
       end
     end
@@ -38,14 +38,14 @@ module Conjure
     desc "rake [ARGUMENTS...]", "Run the specified rake task on the deployed application"
     def rake(*arguments)
       task = arguments.join(" ")
-      Service::RakeTask.new(:task => task, :shell => deployment.shell) do |stdout|
+      Service::RakeTask.new(:task => task, :shell => command_subject.instance.shell) do |stdout|
         print stdout
       end
     end
 
     desc "console", "Start a console on the deployed application"
     def console
-      Service::RailsConsole.new(:shell => deployment.shell) do |stdout|
+      Service::RailsConsole.new(:shell => command_subject.instance.shell) do |stdout|
         print stdout
       end
     end
