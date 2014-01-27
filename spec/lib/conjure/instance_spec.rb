@@ -20,8 +20,7 @@ describe Conjure::Instance do
     end
 
     def where_result_array
-      application = instance_double(Conjure::Application, :name => "app")
-      Conjure::Instance.where(:application => application).to_a
+      Conjure::Instance.where(:origin => "git@github.com:my/app.git").to_a
     end
   end
 
