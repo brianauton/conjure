@@ -2,6 +2,7 @@ module Conjure
   class Instance
     def initialize(options)
       @origin = options[:origin]
+      @branch = options[:branch]
       @rails_environment = options[:rails_environment]
       @server = options[:server]
     end
@@ -24,6 +25,18 @@ module Conjure
 
     def shell
       rails_server.base_image
+    end
+
+    def branch
+      @branch ||= codebase.branch
+    end
+
+    def database
+      codebase.database
+    end
+
+    def codebase
+      @codebase ||= Service::RailsCodebase.new target, origin, @branch, rails_environment
     end
 
     def rails_server

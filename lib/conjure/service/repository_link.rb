@@ -12,6 +12,10 @@ module Conjure
         code_checked_out ? fetch_code_updates : checkout_code
       end
 
+      def branch
+        @branch ||= git_shell.command("cd #{code_path}; git rev-parse --abbrev-ref HEAD").strip
+      end
+
       private
 
       def code_checked_out

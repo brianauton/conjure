@@ -18,10 +18,6 @@ module Conjure
         end
       end
 
-      def database
-        codebase.database
-      end
-
       def codebase
         @codebase ||= Service::RailsCodebase.new @target, @origin, @branch, @environment
       end

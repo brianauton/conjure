@@ -18,12 +18,12 @@ module Conjure
 
     desc "import FILE", "Import the production database from a postgres SQL dump"
     def import(file)
-      deployment.database.import file
+      command_subject.instance.database.import file
     end
 
     desc "export FILE", "Export the production database to a postgres SQL dump"
     def export(file)
-      deployment.database.export file
+      command_subject.instance.database.export file
     end
 
     desc "log", "Display the Rails log from the deployed application"
