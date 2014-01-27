@@ -29,7 +29,7 @@ module Conjure
     method_option :num, :aliases => "-n", :type => :numeric, :default => 10, :desc => "Show N lines of output"
     method_option :tail, :aliases => "-t", :type => :boolean, :desc => "Continue streaming new log entries"
     def log
-      Service::RailsLogView.new(:shell => target.existing_instance.shell, :lines => options[:num], :tail => options[:tail]) do |stdout|
+      Service::RailsLogView.new(:shell => target.existing_instance.shell, :rails_env => target.existing_instance.rails_env, :lines => options[:num], :tail => options[:tail]) do |stdout|
         print stdout
       end
     end
