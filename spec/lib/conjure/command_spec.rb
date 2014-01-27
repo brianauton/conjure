@@ -14,18 +14,20 @@ describe Conjure::Command do
   end
 
   describe "'deploy' command" do
+    before { disable_deployment }
+
     it "allows specifying a branch to deploy with --branch" do
-      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch --test"
+      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "allows specifying a branch to deploy with -b" do
-      invoke_with_arguments "deploy --origin /myrepo.git -b mybranch --test"
+      invoke_with_arguments "deploy --origin /myrepo.git -b mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "defaults to deploying master if no branch given" do
-      invoke_with_arguments "deploy --origin /myrepo.git --test"
+      invoke_with_arguments "deploy --origin /myrepo.git"
       expect(Conjure::Log.history).to match("Deploying master")
     end
   end
@@ -48,5 +50,11 @@ describe Conjure::Command do
     $stdout.string
   ensure
     $stdout = STDOUT
+  end
+
+  def disable_deployment
+    allow_any_instance_of(Conjure::Service::RailsCodebase).to receive(:install)
+    allow_any_instance_of(Conjure::Service::RailsServer).to receive(:run)
+    allow_any_instance_of(Conjure::Service::CloudServer).to receive(:ip_address)
   end
 end

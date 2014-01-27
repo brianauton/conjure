@@ -2,7 +2,6 @@ module Conjure
   class CommandSubject
     def initialize(options = {})
       @origin = options[:origin]
-      @test = options[:test]
     end
 
     def application
@@ -10,9 +9,7 @@ module Conjure
     end
 
     def instance
-      @instance ||= application.instances.first.tap do |instance|
-        instance.test = true if @test && instance
-      end
+      @instance ||= application.instances.first
     end
   end
 end

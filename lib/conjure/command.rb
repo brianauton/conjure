@@ -10,7 +10,6 @@ module Conjure
 
     desc "deploy", "Deploy the app"
     method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy"
-    method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     def deploy
       (command_subject.instance || new_instance).deploy
@@ -68,7 +67,6 @@ module Conjure
         :origin => command_subject.application.origin,
         :branch => options[:branch] || "master",
         :rails_environment => "production",
-        :test => options[:test],
       )
     end
   end

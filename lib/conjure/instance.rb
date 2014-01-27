@@ -1,13 +1,10 @@
 module Conjure
   class Instance
-    attr_writer :test
-
     def initialize(options)
       @origin = options[:origin]
       @branch = options[:branch]
       @rails_environment = options[:rails_environment]
       @server = options[:server]
-      @test = options[:test]
     end
 
     def self.where(options = {})
@@ -40,7 +37,6 @@ module Conjure
 
     def deploy
       Log.info "[deploy] Deploying #{branch} to #{rails_environment}"
-      return if @test
       codebase.install
       rails_server.run
       Log.info "[deploy] Application deployed to #{ip_address}"
