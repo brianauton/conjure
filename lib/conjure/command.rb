@@ -13,7 +13,7 @@ module Conjure
     method_option :test, :type => :boolean, :desc => "Describe the deploy settings but don't deploy"
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     def deploy
-      deployment.deploy
+      (command_subject.instance || new_instance).deploy
     end
 
     desc "import FILE", "Import the production database from a postgres SQL dump"
@@ -59,21 +59,17 @@ module Conjure
 
     private
 
-    def deployment
-      @deployment ||= Service::RailsDeployment.new({
-        :branch => options[:branch],
-        :origin => command_subject.application.origin,
-        :target => target,
-        :test => options[:test],
-      })
-    end
-
-    def target
-      Target.new(:machine_name => "#{command_subject.application.name}-production")
-    end
-
     def command_subject
       CommandSubject.new(options)
+    end
+
+    def new_instance
+      Instance.new(
+        :origin => command_subject.application.origin,
+        :branch => options[:branch] || "master",
+        :rails_environment => "production",
+        :test => options[:test],
+      )
     end
   end
 end

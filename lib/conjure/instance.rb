@@ -1,10 +1,13 @@
 module Conjure
   class Instance
+    attr_writer :test
+
     def initialize(options)
       @origin = options[:origin]
       @branch = options[:branch]
       @rails_environment = options[:rails_environment]
       @server = options[:server]
+      @test = options[:test]
     end
 
     def self.where(options = {})
@@ -35,6 +38,14 @@ module Conjure
       codebase.database
     end
 
+    def deploy
+      Log.info "[deploy] Deploying #{branch} to #{rails_environment}"
+      return if @test
+      codebase.install
+      rails_server.run
+      Log.info "[deploy] Application deployed to #{ip_address}"
+    end
+
     def codebase
       @codebase ||= Service::RailsCodebase.new target, origin, @branch, rails_environment
     end
@@ -43,8 +54,16 @@ module Conjure
       @rails_server ||= Service::RailsServer.new target, rails_environment
     end
 
+    def server
+      @server ||= Service::CloudServer.new("#{application_name}-#{rails_environment}")
+    end
+
     def target
-      @target ||= Target.new(:machine_name => @server.name)
+      @target ||= Target.new(:machine_name => server.name)
+    end
+
+    def application_name
+      Application.new(:origin => @origin).name
     end
 
     def status

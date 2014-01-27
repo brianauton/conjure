@@ -35,6 +35,7 @@ module Conjure
 
       def self.each_with_name_prefix(prefix, &block)
         connection = new("").connection
+        return unless connection
         connection.servers.all.select{|s| s.name.match(/^#{prefix}/)}.each do |server|
           block.call new(server.name)
         end
