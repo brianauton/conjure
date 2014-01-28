@@ -13,6 +13,12 @@ describe Conjure::Instance do
       expect(where_result_array.first.rails_environment).to eq("myenv")
     end
 
+    it "allows instance names to have an optional numeric suffix" do
+      server = stub_server(:name => "app-myenv-3")
+      allow(Conjure::Service::CloudServer).to receive(:each_with_name_prefix).and_yield(server)
+      expect(where_result_array.first.rails_environment).to eq("myenv")
+    end
+
     it "constructs each instance with the correct ip address" do
       server = stub_server(:ip_address => "5.4.3.2")
       allow(Conjure::Service::CloudServer).to receive(:each_with_name_prefix).and_yield(server)

@@ -84,7 +84,7 @@ module Conjure
       def each(&block)
         return unless @origin
         Service::CloudServer.each_with_name_prefix("#{application_name}-") do |server|
-          match = server.name.match(/^#{application_name}-([^-]+)$/)
+          match = server.name.match(/^#{application_name}-([^-]+)(-[0-9]+)?$/)
           yield Instance.new(:server => server) if match
         end
       end
