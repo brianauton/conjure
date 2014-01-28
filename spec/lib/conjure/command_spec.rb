@@ -13,6 +13,20 @@ describe Conjure::Command do
     end.to raise_error(Thor::UndefinedCommandError)
   end
 
+  describe "'create' command" do
+    before { disable_deployment }
+
+    it "allows specifying a branch to deploy with --branch" do
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
+      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch"
+    end
+
+    it "allows specifying a rails_env to deploy with --rails-env" do
+      expect_codebase_arguments("/myrepo.git", "master", "myenv")
+      invoke_with_arguments "deploy --origin /myrepo.git --rails-env=myenv"
+    end
+  end
+
   describe "'deploy' command" do
     before { disable_deployment }
 

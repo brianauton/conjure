@@ -8,6 +8,14 @@ module Conjure
       Log.level = :debug if options[:verbose]
     end
 
+    desc "create", "Create and deploy a new instance of the application"
+    method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy, default 'master'"
+    method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
+    method_option :rails_env, :type => :string, :desc => "Specify the Rails environment, default 'production'"
+    def create
+      target.new_instance.deploy
+    end
+
     desc "deploy", "Deploy the app"
     method_option :branch, :aliases => "-b", :type => :string, :desc => "Specify branch to deploy, default 'master'"
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
