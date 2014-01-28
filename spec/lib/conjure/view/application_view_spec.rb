@@ -25,8 +25,8 @@ module Conjure::View
 
     it "shows environments for all instances" do
       view = build_application_view(:instances => [
-        stub_instance(:rails_environment => "staging"),
-        stub_instance(:rails_environment => "development"),
+        stub_instance(:name => "myapp-staging", :rails_environment => "staging"),
+        stub_instance(:name => "myapp-development", :rails_environment => "development"),
       ])
       expect(view.render).to include("staging")
       expect(view.render).to include("development")
@@ -57,7 +57,7 @@ module Conjure::View
     end
 
     def stub_instance(attributes)
-      defaults = {:rails_environment => "", :ip_address => "", :status => ""}
+      defaults = {:name => "", :rails_environment => "", :ip_address => "", :status => ""}
       instance_double(Conjure::Instance, defaults.merge(attributes))
     end
   end

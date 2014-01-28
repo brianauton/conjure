@@ -30,9 +30,9 @@ module Conjure
       def instances_table
         data = @instances.map do |instance|
           {
-            "Address" => instance.ip_address,
-            "Environment" => instance.rails_environment,
+            "Name" => instance.name,
             "Status" => instance.status,
+            "Address" => instance.ip_address,
           }
         end
         TableView.new(data).render

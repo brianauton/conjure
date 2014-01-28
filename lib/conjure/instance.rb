@@ -66,6 +66,10 @@ module Conjure
       "running"
     end
 
+    def name
+      server.name
+    end
+
     class Collection
       include Enumerable
 
