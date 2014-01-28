@@ -17,16 +17,19 @@ describe Conjure::Command do
     before { disable_deployment }
 
     it "allows specifying a branch to deploy with --branch" do
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
       invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "allows specifying a branch to deploy with -b" do
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
       invoke_with_arguments "deploy --origin /myrepo.git -b mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "defaults to deploying master if no branch given" do
+      expect_codebase_arguments("/myrepo.git", "master", "production")
       invoke_with_arguments "deploy --origin /myrepo.git"
       expect(Conjure::Log.history).to match("Deploying master")
     end
@@ -42,6 +45,13 @@ describe Conjure::Command do
 
   def invoke_with_arguments(arguments)
     Conjure::Command.start(arguments.split " ")
+  end
+
+  def expect_codebase_arguments(*arguments)
+    arguments = [anything] + arguments
+    expect(Conjure::Service::RailsCodebase).to receive(:new).with(*arguments) do
+      double(:install => nil)
+    end
   end
 
   def capture_stdout
