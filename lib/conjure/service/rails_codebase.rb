@@ -21,6 +21,10 @@ module Conjure
         }.to_yaml
       end
 
+      def branch
+        @branch ||= repository_link.branch
+      end
+
       def install
         repository_link.update
         configure_database

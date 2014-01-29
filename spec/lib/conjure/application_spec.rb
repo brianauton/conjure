@@ -23,9 +23,9 @@ describe Conjure::Application do
 
   describe "#instances" do
     it "creates a collection of instances scoped to the application" do
-      application = Conjure::Application.new
+      application = Conjure::Application.new(:origin => "myorigin")
       instances = double
-      expect(Conjure::Instance).to receive(:where).with(:application => application) { instances }
+      expect(Conjure::Instance).to receive(:where).with(:origin => "myorigin") { instances }
       expect(application.instances).to eq(instances)
     end
   end

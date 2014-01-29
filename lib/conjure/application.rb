@@ -7,11 +7,11 @@ module Conjure
     end
 
     def instances
-      Instance.where(:application => self)
+      Instance.where(:origin => @origin)
     end
 
     def data_sets
-      DataSet.find(:application => self)
+      DataSet.find(:origin => @origin)
     end
 
     def name

@@ -5,7 +5,7 @@ module Conjure
         arguments = []
         arguments << "-n #{options[:lines]}" if options[:lines]
         arguments << "-f" if options[:tail]
-        arguments << "application_root/log/production.log"
+        arguments << "application_root/log/#{options[:rails_env]}.log"
         options[:shell].command("tail #{arguments.join ' '}", &block)
       rescue Interrupt
       end

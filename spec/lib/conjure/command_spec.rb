@@ -13,19 +13,38 @@ describe Conjure::Command do
     end.to raise_error(Thor::UndefinedCommandError)
   end
 
-  describe "'deploy' command" do
+  describe "'create' command" do
+    before { disable_deployment }
+
     it "allows specifying a branch to deploy with --branch" do
-      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch --test"
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
+      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch"
+    end
+
+    it "allows specifying a rails_env to deploy with --rails-env" do
+      expect_codebase_arguments("/myrepo.git", "master", "myenv")
+      invoke_with_arguments "deploy --origin /myrepo.git --rails-env=myenv"
+    end
+  end
+
+  describe "'deploy' command" do
+    before { disable_deployment }
+
+    it "allows specifying a branch to deploy with --branch" do
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
+      invoke_with_arguments "deploy --origin /myrepo.git --branch mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "allows specifying a branch to deploy with -b" do
-      invoke_with_arguments "deploy --origin /myrepo.git -b mybranch --test"
+      expect_codebase_arguments("/myrepo.git", "mybranch", "production")
+      invoke_with_arguments "deploy --origin /myrepo.git -b mybranch"
       expect(Conjure::Log.history).to match("Deploying mybranch")
     end
 
     it "defaults to deploying master if no branch given" do
-      invoke_with_arguments "deploy --origin /myrepo.git --test"
+      expect_codebase_arguments("/myrepo.git", "master", "production")
+      invoke_with_arguments "deploy --origin /myrepo.git"
       expect(Conjure::Log.history).to match("Deploying master")
     end
   end
@@ -42,11 +61,24 @@ describe Conjure::Command do
     Conjure::Command.start(arguments.split " ")
   end
 
+  def expect_codebase_arguments(*arguments)
+    arguments = [anything] + arguments
+    expect(Conjure::Service::RailsCodebase).to receive(:new).with(*arguments) do
+      double(:install => nil)
+    end
+  end
+
   def capture_stdout
     $stdout = StringIO.new
     yield
     $stdout.string
   ensure
     $stdout = STDOUT
+  end
+
+  def disable_deployment
+    allow_any_instance_of(Conjure::Service::RailsCodebase).to receive(:install)
+    allow_any_instance_of(Conjure::Service::RailsServer).to receive(:run)
+    allow_any_instance_of(Conjure::Service::CloudServer).to receive(:ip_address)
   end
 end
