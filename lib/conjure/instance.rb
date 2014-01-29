@@ -35,6 +35,11 @@ module Conjure
       codebase.database
     end
 
+    def create
+      @server_name = Service::CloudServer.ensure_unique_name(server_name)
+      deploy
+    end
+
     def deploy
       Log.info "[deploy] Deploying #{branch} to #{rails_environment}"
       codebase.install
@@ -50,8 +55,12 @@ module Conjure
       @rails_server ||= Service::RailsServer.new target, rails_environment
     end
 
+    def server_name
+      @server_name ||= "#{application_name}-#{rails_environment}"
+    end
+
     def server
-      @server ||= Service::CloudServer.new("#{application_name}-#{rails_environment}")
+      @server ||= Service::CloudServer.new(server_name)
     end
 
     def target

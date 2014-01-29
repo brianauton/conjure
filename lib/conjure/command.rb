@@ -13,7 +13,7 @@ module Conjure
     method_option :origin, :type => :string, :desc => "Specify git URL to deploy from"
     method_option :rails_env, :type => :string, :desc => "Specify the Rails environment, default 'production'"
     def create
-      target.new_instance.deploy
+      target.new_instance.create
     end
 
     desc "deploy", "Deploy the app"

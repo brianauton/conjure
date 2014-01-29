@@ -33,12 +33,28 @@ module Conjure
         @existing_server ||= connection.servers.find{|s| s.name == @name } if connection
       end
 
+      def self.connection
+        new("").connection
+      end
+
       def self.each_with_name_prefix(prefix, &block)
-        connection = new("").connection
         return unless connection
         connection.servers.all.select{|s| s.name.match(/^#{prefix}/)}.each do |server|
           block.call new(server.name)
         end
+      end
+
+      def self.ensure_unique_name(name)
+        return name unless connection
+        existing_names = connection.servers.all.map{ |s| s.name }
+        name = increment_numeric_suffix(name) while existing_names.include? name
+        name
+      end
+
+      def self.increment_numeric_suffix(name)
+        parts = name.split("-")
+        parts[2] = parts[2] ? ((parts[2].to_i)+1).to_s : "2"
+        parts.join("-")
       end
 
       def new_server
