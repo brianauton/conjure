@@ -35,10 +35,10 @@ module Conjure
         end
       end
 
-      def build
-        result = prepare_build_directory { |dir| `docker build #{dir}` }
+      def build(server)
+        result = prepare_build_directory { |dir| server.run "docker build #{dir}" }
         if match = result.match(/Successfully built ([0-9a-z]+)/)
-          DockerImage.new match[1]
+          DockerImage.new server, match[1]
         else
           raise "Failed to build Docker image"
         end

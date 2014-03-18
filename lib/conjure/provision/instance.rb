@@ -3,23 +3,26 @@ require "conjure/provision/dockerfile"
 module Conjure
   module Provision
     class Instance
-      def initialize(rails_env)
+      def initialize(app_name, rails_env)
+        @app_name = app_name
         @rails_env = rails_env
       end
 
       def provision
+        server = Server.create "#{@app_name}-#{@rails_env}"
+
         db_password = new_db_password
-        postgres_image = postgres_dockerfile(db_password).build
+        postgres_image = postgres_dockerfile(db_password).build(server)
         db_ip_address = postgres_image.start("/sbin/my_init")
 
-        passenger_image = passenger_dockerfile(db_ip_address, db_password).build
-        ip_address = passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 22:22")
+        passenger_image = passenger_dockerfile(db_ip_address, db_password).build(server)
+        passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
 
-        host = "root@#{ip_address}"
+        host = "root@#{server.ip_address} -p 2222"
         remote_command host, "/etc/init.d/nginx restart"
         {
-          :ip_address => ip_address,
-          :port => "22",
+          :ip_address => server.ip_address,
+          :port => "2222",
           :user => "app",
           :rails_env => @rails_env
         }
