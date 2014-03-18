@@ -25,13 +25,15 @@ module Conjure
       end
 
       def self.bootstrap_options(name)
+        ssh_dir = File.expand_path("~/.ssh")
+        raise "Error: ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub must exist." unless File.exist?(ssh_dir) && File.exist?("#{ssh_dir}/id_rsa") && File.exist?("#{ssh_dir}/id_rsa.pub")
         {
           :name => name,
           :flavor_id =>  "66",
           :region_id => "4",
           :image_id => "2158507",
-          :private_key_path => "/home/brianauton/.ssh/id_rsa",
-          :public_key_path => "/home/brianauton/.ssh/id_rsa.pub",
+          :private_key_path => "#{ssh_dir}/id_rsa",
+          :public_key_path => "#{ssh_dir}/id_rsa.pub",
         }
       end
     end
