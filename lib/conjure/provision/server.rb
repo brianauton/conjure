@@ -3,10 +3,27 @@ module Conjure
     class Server
       def initialize(server)
         @server = server
+        puts "Configuring droplet..."
+        install_swap
       end
 
       def ip_address
         @server.public_ip_address
+      end
+
+      def run(command)
+        options = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        command = "ssh #{options} root@#{ip_address} '#{shell_escape_single_quotes command}'"
+        `#{command}`
+      end
+
+      def shell_escape_single_quotes(command)
+        command.gsub("'", "'\"'\"'")
+      end
+
+      def install_swap
+        run "dd if=/dev/zero of=/root/swapfile bs=1024 count=524288"
+        run "mkswap /root/swapfile; swapon /root/swapfile"
       end
 
       def self.create(name)
