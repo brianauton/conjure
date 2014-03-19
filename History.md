@@ -1,3 +1,9 @@
+### Version 0.2.0
+2014-3-18
+
+* Add source files for published Docker images
+* Experimental API for programmatic provisioning
+
 ### Version 0.1.8
 2014-1-24
 

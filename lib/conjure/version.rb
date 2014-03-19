@@ -1,3 +1,3 @@
 module Conjure
-  VERSION = "0.1.8" unless defined?(VERSION)
+  VERSION = "0.2.0" unless defined?(VERSION)
 end
