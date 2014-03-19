@@ -1,3 +1,9 @@
+### Version 0.2.1
+2014-3-19
+
+* Uniquify server name to avoid conflicts when provisioning
+* Remove existing fog_default key to avoid conflicts when provisioning
+
 ### Version 0.2.0
 2014-3-18
 
