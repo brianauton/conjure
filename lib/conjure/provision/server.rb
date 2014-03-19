@@ -35,6 +35,7 @@ module Conjure
       def self.create(name)
         puts "Creating DigitalOcean droplet..."
         connection = Fog::Compute.new compute_options
+        delete_default_key connection
         new connection.servers.bootstrap(bootstrap_options uniquify(name))
       end
 
@@ -58,6 +59,10 @@ module Conjure
           :private_key_path => "#{ssh_dir}/id_rsa",
           :public_key_path => "#{ssh_dir}/id_rsa.pub",
         }
+      end
+
+      def self.delete_default_key(connection)
+        connection.ssh_keys.find{|k| k.name=="fog_default"}.try :destroy
       end
 
       def self.uniquify(server_name)
