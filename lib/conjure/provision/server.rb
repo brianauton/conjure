@@ -35,7 +35,7 @@ module Conjure
       def self.create(name)
         puts "Creating DigitalOcean droplet..."
         connection = Fog::Compute.new compute_options
-        new connection.servers.bootstrap(bootstrap_options name)
+        new connection.servers.bootstrap(bootstrap_options uniquify(name))
       end
 
       def self.compute_options
@@ -58,6 +58,11 @@ module Conjure
           :private_key_path => "#{ssh_dir}/id_rsa",
           :public_key_path => "#{ssh_dir}/id_rsa.pub",
         }
+      end
+
+      def self.uniquify(server_name)
+        require "securerandom"
+        "#{server_name}-#{SecureRandom.hex 4}"
       end
     end
   end
