@@ -37,10 +37,11 @@ module Conjure
       end
 
       def passenger_dockerfile(db_ip_address, db_password)
-        config_path = "config/provision/application"
+        public_key = File.expand_path("~/.ssh/id_rsa.pub")
+        raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
         file = Dockerfile.new("conjure/passenger-ruby21:1.0.0")
-        file.add_file "#{config_path}/id_rsa.pub", "/root/.ssh/authorized_keys"
-        file.add_file "#{config_path}/id_rsa.pub", "/home/app/.ssh/authorized_keys"
+        file.add_file public_key, "/root/.ssh/authorized_keys"
+        file.add_file public_key, "/home/app/.ssh/authorized_keys"
         file.run "chown app.app /home/app/.ssh/authorized_keys"
         file.run "chown root.root /root/.ssh/authorized_keys"
         file.add_file_data application_conf, "/etc/nginx/sites-enabled/application.conf"
