@@ -1,3 +1,8 @@
+### Version 0.2.3
+2014-3-28
+
+* Create database when provisioning, for easier initial deployment
+
 ### Version 0.2.2
 2014-3-28
 
