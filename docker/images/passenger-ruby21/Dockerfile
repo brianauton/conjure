@@ -1,11 +1,11 @@
-# conjure/passenger-ruby21:1.0.0
+# conjure/passenger-ruby21:1.0.1
 
-FROM phusion/passenger-ruby21:0.9.6
+FROM phusion/passenger-ruby21:0.9.8
 MAINTAINER Brian Auton brianauton@gmail.com
 ENV HOME /root
 
 RUN apt-get update
-RUN apt-get -y install libsqlite3-dev
+RUN apt-get -y install libsqlite3-dev libpq-dev
 RUN /build/nodejs.sh
 
 RUN rm -f /etc/service/nginx/down
