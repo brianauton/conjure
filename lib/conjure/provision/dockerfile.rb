@@ -41,7 +41,7 @@ module Conjure
         prepare_build_directory do |dir|
           `cd #{dir}; tar czf #{archive} *`
           server.send_file archive, "dockerfile.tar.gz"
-          server.run "mkdir #{build_dir}; cd #{build_dir}; tar xzf ~/dockerfile.tar.gz"
+          server.run "mkdir #{build_dir}; cd #{build_dir}; tar mxzf ~/dockerfile.tar.gz"
           result = yield "/tmp/docker_build"
           server.run "rm -Rf #{build_dir} ~/dockerfile.tar.gz"
           `rm #{archive}`
