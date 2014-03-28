@@ -1,3 +1,8 @@
+### Version 0.2.2
+2014-3-28
+
+* Bugfixes for postgres support when provisioning
+
 ### Version 0.2.1
 2014-3-19
 
