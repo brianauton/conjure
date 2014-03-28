@@ -33,6 +33,7 @@ module Conjure
         file.run "echo \"ALTER USER db PASSWORD '#{db_password}'\" >/tmp/setpass"
         file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
         file.run "rm /tmp/setpass"
+        file.run "/sbin/my_init -- /sbin/setuser db sh -c \"sleep 1; /usr/bin/createdb #{database_name}\""
         file
       end
 
@@ -54,9 +55,13 @@ module Conjure
         SecureRandom.urlsafe_base64 20
       end
 
+      def database_name
+        "#{@app_name}_#{@rails_env}"
+      end
+
       def database_yml(db_ip_address, db_password)
         require "yaml"
-        {@rails_env => {"adapter" => "postgresql", "database" => "application", "host" => db_ip_address, "username" => "db", "password" => db_password, "template" => "template0"}}.to_yaml
+        {@rails_env => {"adapter" => "postgresql", "database" => database_name, "host" => db_ip_address, "username" => "db", "password" => db_password, "template" => "template0"}}.to_yaml
       end
 
       def application_conf
