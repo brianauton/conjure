@@ -56,7 +56,7 @@ module Conjure
 
       def database_yml(db_ip_address, db_password)
         require "yaml"
-        {@rails_env => {"adapter" => "sqlite3", "database" => "db/#{@rails_env}.sqlite3", "host" => db_ip_address, "username" => "db", "password" => db_password}}.to_yaml
+        {@rails_env => {"adapter" => "postgresql", "database" => "application", "host" => db_ip_address, "username" => "db", "password" => db_password, "template" => "template0"}}.to_yaml
       end
 
       def application_conf
