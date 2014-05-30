@@ -1,4 +1,5 @@
 require "conjure/provision/dockerfile"
+require "conjure/provision/local_docker"
 require "conjure/provision/postgres"
 
 module Conjure
@@ -9,20 +10,28 @@ module Conjure
         @rails_env = rails_env
       end
 
-      def provision
-        platform = Server.create "#{@app_name}-#{@rails_env}"
+      def provision(options = {})
+        if options[:local]
+          platform = LocalDocker.new
+        else
+          platform = Server.create "#{@app_name}-#{@rails_env}"
+        end
 
         database = Postgres.new(platform, database_name)
         database.start
 
         passenger_image = passenger_dockerfile(database.ip_address, database.password).build(platform)
-        passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
+        passenger_ip = passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
+        port = platform.ip_address ? "2222" : "22"
+        ip_address = platform.ip_address || passenger_ip
 
-        host = "root@#{platform.ip_address} -p 2222"
+        host = "root@#{ip_address} -p #{port}"
+
+        sleep 1
         remote_command host, "/etc/init.d/nginx restart"
         {
-          :ip_address => platform.ip_address,
-          :port => "2222",
+          :ip_address => ip_address,
+          :port => port,
           :user => "app",
           :rails_env => @rails_env
         }
