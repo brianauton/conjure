@@ -1,6 +1,7 @@
 require "conjure/provision/docker/template"
 require "conjure/provision/local_docker"
 require "conjure/provision/postgres"
+require "yaml"
 
 module Conjure
   module Provision
@@ -51,8 +52,7 @@ module Conjure
       end
 
       def database_yml(database)
-        require "yaml"
-        {@rails_env => {"adapter" => "postgresql", "database" => database.name, "host" => database.ip_address, "username" => "db", "password" => database.password, "template" => "template0"}}.to_yaml
+        {@rails_env => database.rails_config}.to_yaml
       end
 
       def application_conf
