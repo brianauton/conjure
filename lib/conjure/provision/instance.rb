@@ -20,7 +20,7 @@ module Conjure
         database = Postgres.new(platform, database_name)
         database.start
 
-        passenger_image = passenger_dockerfile(database.ip_address, database.password).build(platform)
+        passenger_image = passenger_dockerfile(database).build(platform)
         passenger_ip = passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
         port = platform.ip_address ? "2222" : "22"
         ip_address = platform.ip_address || passenger_ip
@@ -37,7 +37,7 @@ module Conjure
         }
       end
 
-      def passenger_dockerfile(db_ip_address, db_password)
+      def passenger_dockerfile(database)
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
         file = Docker::Template.new("conjure/passenger-ruby21:1.0.1")
@@ -46,7 +46,7 @@ module Conjure
         file.run "chown app.app /home/app/.ssh/authorized_keys"
         file.run "chown root.root /root/.ssh/authorized_keys"
         file.add_file_data application_conf, "/etc/nginx/sites-enabled/application.conf"
-        file.add_file_data database_yml(db_ip_address, db_password), "/home/app/application/shared/config/database.yml"
+        file.add_file_data database_yml(database), "/home/app/application/shared/config/database.yml"
         file
       end
 
@@ -54,9 +54,9 @@ module Conjure
         "#{@app_name}_#{@rails_env}"
       end
 
-      def database_yml(db_ip_address, db_password)
+      def database_yml(database)
         require "yaml"
-        {@rails_env => {"adapter" => "postgresql", "database" => database_name, "host" => db_ip_address, "username" => "db", "password" => db_password, "template" => "template0"}}.to_yaml
+        {@rails_env => {"adapter" => "postgresql", "database" => database_name, "host" => database.ip_address, "username" => "db", "password" => database.password, "template" => "template0"}}.to_yaml
       end
 
       def application_conf
