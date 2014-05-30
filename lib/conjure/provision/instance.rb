@@ -1,4 +1,5 @@
 require "conjure/provision/dockerfile"
+require "conjure/provision/postgres"
 
 module Conjure
   module Provision
@@ -11,11 +12,10 @@ module Conjure
       def provision
         server = Server.create "#{@app_name}-#{@rails_env}"
 
-        db_password = new_db_password
-        postgres_image = postgres_dockerfile(db_password).build(server)
-        db_ip_address = postgres_image.start("/sbin/my_init")
+        database = Postgres.new(server, database_name)
+        database.start
 
-        passenger_image = passenger_dockerfile(db_ip_address, db_password).build(server)
+        passenger_image = passenger_dockerfile(database.ip_address, database.password).build(server)
         passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
 
         host = "root@#{server.ip_address} -p 2222"
@@ -26,15 +26,6 @@ module Conjure
           :user => "app",
           :rails_env => @rails_env
         }
-      end
-
-      def postgres_dockerfile(db_password)
-        file = Dockerfile.new("conjure/postgres93:1.0.0")
-        file.run "echo \"ALTER USER db PASSWORD '#{db_password}'\" >/tmp/setpass"
-        file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
-        file.run "rm /tmp/setpass"
-        file.run "/sbin/my_init -- /sbin/setuser db sh -c \"sleep 1; /usr/bin/createdb #{database_name}\""
-        file
       end
 
       def passenger_dockerfile(db_ip_address, db_password)
@@ -48,11 +39,6 @@ module Conjure
         file.add_file_data application_conf, "/etc/nginx/sites-enabled/application.conf"
         file.add_file_data database_yml(db_ip_address, db_password), "/home/app/application/shared/config/database.yml"
         file
-      end
-
-      def new_db_password
-        require "securerandom"
-        SecureRandom.urlsafe_base64 20
       end
 
       def database_name
