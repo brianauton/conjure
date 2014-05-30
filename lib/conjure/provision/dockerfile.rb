@@ -36,22 +36,10 @@ module Conjure
         end
       end
 
-      def upload_build_directory(server, &block)
-        archive = "/tmp/dockerfile.tar.gz"
-        build_dir = "/tmp/docker_build"
-        prepare_build_directory do |dir|
-          `cd #{dir}; tar czf #{archive} *`
-          server.send_file archive, "dockerfile.tar.gz"
-          server.run "mkdir #{build_dir}; cd #{build_dir}; tar mxzf ~/dockerfile.tar.gz"
-          result = yield "/tmp/docker_build"
-          server.run "rm -Rf #{build_dir} ~/dockerfile.tar.gz"
-          `rm #{archive}`
-          result
-        end
-      end
-
       def build(server)
-        result = upload_build_directory(server) { |dir| server.run "docker build #{dir}" }
+        result = prepare_build_directory do |dir|
+          server.with_directory(dir) { |remote_dir| server.run "docker build #{remote_dir}" }
+        end
         if match = result.match(/Successfully built ([0-9a-z]+)/)
           DockerImage.new server, match[1]
         else

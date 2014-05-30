@@ -1,3 +1,5 @@
+require "securerandom"
+
 module Conjure
   module Provision
     class Server
@@ -66,8 +68,19 @@ module Conjure
       end
 
       def self.uniquify(server_name)
-        require "securerandom"
         "#{server_name}-#{SecureRandom.hex 4}"
+      end
+
+      def with_directory(local_path, &block)
+        local_archive = remote_archive = "/tmp/archive.tar.gz"
+        remote_path = "/tmp/unpacked_archive"
+        `cd #{local_path}; tar czf #{local_archive} *`
+        send_file local_archive, remote_archive
+        run "mkdir #{remote_path}; cd #{remote_path}; tar mxzf #{remote_archive}"
+        yield remote_path
+      ensure
+        `rm #{local_archive}`
+        run "rm -Rf #{remote_path} #{remote_archive}"
       end
     end
   end
