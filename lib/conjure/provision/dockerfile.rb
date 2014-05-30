@@ -1,3 +1,4 @@
+require "conjure/provision/docker/host"
 require "conjure/provision/docker_image"
 
 module Conjure
@@ -36,11 +37,12 @@ module Conjure
       end
 
       def build(platform)
-        result = prepare_build_directory do |dir|
-          platform.with_directory(dir) { |remote_dir| platform.run "docker build #{remote_dir}" }
+        docker_host = Docker::Host.new(platform)
+        image_name = prepare_build_directory do |dir|
+          docker_host.built_image_name dir
         end
-        if match = result.match(/Successfully built ([0-9a-z]+)/)
-          DockerImage.new platform, match[1]
+        if image_name
+          DockerImage.new docker_host, image_name
         else
           raise "Failed to build Docker image, output was #{result}"
         end
