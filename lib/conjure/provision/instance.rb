@@ -17,7 +17,7 @@ module Conjure
           platform = Server.create "#{@app_name}-#{@rails_env}"
         end
 
-        database = Postgres.new(platform, database_name)
+        database = Postgres.new(platform)
         database.start
 
         passenger_image = passenger_dockerfile(database).build(platform)
@@ -50,13 +50,9 @@ module Conjure
         file
       end
 
-      def database_name
-        "#{@app_name}_#{@rails_env}"
-      end
-
       def database_yml(database)
         require "yaml"
-        {@rails_env => {"adapter" => "postgresql", "database" => database_name, "host" => database.ip_address, "username" => "db", "password" => database.password, "template" => "template0"}}.to_yaml
+        {@rails_env => {"adapter" => "postgresql", "database" => database.name, "host" => database.ip_address, "username" => "db", "password" => database.password, "template" => "template0"}}.to_yaml
       end
 
       def application_conf

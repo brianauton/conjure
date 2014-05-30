@@ -4,11 +4,11 @@ require "securerandom"
 module Conjure
   module Provision
     class Postgres
-      attr_reader :password, :ip_address
+      attr_reader :name, :password, :ip_address
 
-      def initialize(platform, name)
+      def initialize(platform)
         @platform = platform
-        @name = name
+        @name = "conjure_db_#{SecureRandom.hex 8}"
         @password = new_password
       end
 
