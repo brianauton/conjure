@@ -35,12 +35,12 @@ module Conjure
         end
       end
 
-      def build(server)
+      def build(platform)
         result = prepare_build_directory do |dir|
-          server.with_directory(dir) { |remote_dir| server.run "docker build #{remote_dir}" }
+          platform.with_directory(dir) { |remote_dir| platform.run "docker build #{remote_dir}" }
         end
         if match = result.match(/Successfully built ([0-9a-z]+)/)
-          DockerImage.new server, match[1]
+          DockerImage.new platform, match[1]
         else
           raise "Failed to build Docker image, output was #{result}"
         end

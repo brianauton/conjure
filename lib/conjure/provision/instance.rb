@@ -10,18 +10,18 @@ module Conjure
       end
 
       def provision
-        server = Server.create "#{@app_name}-#{@rails_env}"
+        platform = Server.create "#{@app_name}-#{@rails_env}"
 
-        database = Postgres.new(server, database_name)
+        database = Postgres.new(platform, database_name)
         database.start
 
-        passenger_image = passenger_dockerfile(database.ip_address, database.password).build(server)
+        passenger_image = passenger_dockerfile(database.ip_address, database.password).build(platform)
         passenger_image.start("/sbin/my_init", :run_options => "-p 80:80 -p 2222:22")
 
-        host = "root@#{server.ip_address} -p 2222"
+        host = "root@#{platform.ip_address} -p 2222"
         remote_command host, "/etc/init.d/nginx restart"
         {
-          :ip_address => server.ip_address,
+          :ip_address => platform.ip_address,
           :port => "2222",
           :user => "app",
           :rails_env => @rails_env

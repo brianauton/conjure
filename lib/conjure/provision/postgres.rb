@@ -3,14 +3,14 @@ module Conjure
     class Postgres
       attr_reader :password, :ip_address
 
-      def initialize(server, name)
-        @server = server
+      def initialize(platform, name)
+        @platform = platform
         @name = name
         @password = new_password
       end
 
       def start
-        @ip_address = dockerfile(password).build(@server).start("/sbin/my_init")
+        @ip_address = dockerfile(password).build(@platform).start("/sbin/my_init")
       end
 
       private
