@@ -16,12 +16,12 @@ module Conjure
       private
 
       def dockerfile(db_password)
-        Dockerfile.new("conjure/postgres93:1.0.0") do
-          run "echo \"ALTER USER db PASSWORD '#{db_password}'\" >/tmp/setpass"
-          run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
-          run "rm /tmp/setpass"
-          run "/sbin/my_init -- /sbin/setuser db sh -c \"sleep 1; /usr/bin/createdb #{@name}\""
-        end
+        file = Dockerfile.new("conjure/postgres93:1.0.0")
+        file.run "echo \"ALTER USER db PASSWORD '#{db_password}'\" >/tmp/setpass"
+        file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
+        file.run "rm /tmp/setpass"
+        file.run "/sbin/my_init -- /sbin/setuser db sh -c \"sleep 1; /usr/bin/createdb #{@name}\""
+        file
       end
 
       def new_password
