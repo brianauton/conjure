@@ -65,7 +65,7 @@ module Conjure
       end
 
       def remote_command(host, command)
-        `ssh -o StrictHostKeyChecking=no #{host} #{command}`
+        `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{host} #{command}`
       end
     end
   end
