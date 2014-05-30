@@ -3,9 +3,10 @@ require "conjure/provision/docker_image"
 module Conjure
   module Provision
     class Dockerfile
-      def initialize(base_image_name)
+      def initialize(base_image_name, &block)
         @commands = ["FROM #{base_image_name}"]
         @file_data = {}
+        instance_eval(&block) if block
       end
 
       def add_file(filename, remote_name)
