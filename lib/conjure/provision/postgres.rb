@@ -1,3 +1,6 @@
+require "conjure/provision/docker/template"
+require "securerandom"
+
 module Conjure
   module Provision
     class Postgres
@@ -16,7 +19,7 @@ module Conjure
       private
 
       def dockerfile(db_password)
-        file = Dockerfile.new("conjure/postgres93:1.0.0")
+        file = Docker::Template.new("conjure/postgres93:1.0.0")
         file.run "echo \"ALTER USER db PASSWORD '#{db_password}'\" >/tmp/setpass"
         file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
         file.run "rm /tmp/setpass"
@@ -25,7 +28,6 @@ module Conjure
       end
 
       def new_password
-        require "securerandom"
         SecureRandom.urlsafe_base64 20
       end
     end

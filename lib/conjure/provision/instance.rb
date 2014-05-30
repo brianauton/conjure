@@ -1,4 +1,4 @@
-require "conjure/provision/dockerfile"
+require "conjure/provision/docker/template"
 require "conjure/provision/local_docker"
 require "conjure/provision/postgres"
 
@@ -40,7 +40,7 @@ module Conjure
       def passenger_dockerfile(db_ip_address, db_password)
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
-        file = Dockerfile.new("conjure/passenger-ruby21:1.0.1")
+        file = Docker::Template.new("conjure/passenger-ruby21:1.0.1")
         file.add_file public_key, "/root/.ssh/authorized_keys"
         file.add_file public_key, "/home/app/.ssh/authorized_keys"
         file.run "chown app.app /home/app/.ssh/authorized_keys"
