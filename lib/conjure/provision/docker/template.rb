@@ -42,11 +42,7 @@ module Conjure
           image_name = prepare_build_directory do |dir|
             docker_host.built_image_name dir
           end
-          if image_name
-            Image.new docker_host, image_name
-          else
-            raise "Failed to build Docker image, output was #{result}"
-          end
+          Image.new docker_host, image_name
         end
       end
     end

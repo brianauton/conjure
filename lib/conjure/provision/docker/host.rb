@@ -12,6 +12,8 @@ module Conjure
           end
           if match = result.match(/Successfully built ([0-9a-z]+)/)
             match[1]
+          else
+            raise "Failed to build Docker image, output was #{result}"
           end
         end
 
