@@ -57,7 +57,7 @@ module Conjure
           :name => name,
           :flavor_id =>  "66",
           :region_id => "4",
-          :image_id => "3668014",
+          :image_id => "5506141",
           :private_key_path => "#{ssh_dir}/id_rsa",
           :public_key_path => "#{ssh_dir}/id_rsa.pub",
         }
