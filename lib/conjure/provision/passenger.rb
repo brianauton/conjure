@@ -1,4 +1,5 @@
 require "conjure/provision/docker/template"
+require "securerandom"
 
 module Conjure
   module Provision
@@ -31,11 +32,16 @@ module Conjure
         file.run "chown root.root /root/.ssh/authorized_keys"
         file.add_file_data nginx_conf, "/etc/nginx/sites-enabled/application.conf"
         file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
+        file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file
       end
 
       def database_yml
         {@rails_env => @database.rails_config}.to_yaml
+      end
+
+      def secrets_yml
+        {@rails_env => {"secret_key_base" => SecureRandom.hex(64)}}.to_yaml
       end
 
       def nginx_conf
