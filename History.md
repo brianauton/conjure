@@ -1,3 +1,9 @@
+### Version 0.2.4
+2014-8-29
+
+* Update to latest DigitalOcean Docker image ID
+* Generate minimal secrets.yml when provisioning
+
 ### Version 0.2.3
 2014-3-28
 
