@@ -11,6 +11,7 @@ module Conjure
         @database = database
         @rails_env = rails_env
         @nginx_directives = options[:nginx_directives] || {}
+        @system_packages = options[:system_packages] || []
       end
 
       def start 
@@ -27,6 +28,7 @@ module Conjure
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
         file = Docker::Template.new("conjure/passenger-ruby21:1.0.1")
+        file.run apt_command if apt_command
         file.add_file public_key, "/root/.ssh/authorized_keys"
         file.add_file public_key, "/home/app/.ssh/authorized_keys"
         file.run "chown app.app /home/app/.ssh/authorized_keys"
@@ -35,6 +37,12 @@ module Conjure
         file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
         file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file
+      end
+
+      def apt_command
+        if @system_packages.any?
+          "apt-get update && apt-get install -y #{@system_packages.join ' '}"
+        end
       end
 
       def database_yml
