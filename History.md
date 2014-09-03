@@ -1,3 +1,8 @@
+### Version 0.2.5
+2014-9-3
+
+* Extra configuration options for provisioning
+
 ### Version 0.2.4
 2014-8-29
 
