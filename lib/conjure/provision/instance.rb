@@ -6,9 +6,10 @@ require "yaml"
 module Conjure
   module Provision
     class Instance
-      def initialize(app_name, rails_env)
+      def initialize(app_name, rails_env, options = {})
         @app_name = app_name
         @rails_env = rails_env
+        @options = options
       end
 
       def provision(options = {})
@@ -21,7 +22,7 @@ module Conjure
         database = Postgres.new(platform)
         database.start
 
-        webserver = Passenger.new(platform, database, @rails_env)
+        webserver = Passenger.new(platform, database, @rails_env, @options)
         webserver.start
         passenger_ip = webserver.ip_address
 

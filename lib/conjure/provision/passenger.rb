@@ -6,10 +6,11 @@ module Conjure
     class Passenger
       attr_reader :ip_address
 
-      def initialize(platform, database, rails_env)
+      def initialize(platform, database, rails_env, options)
         @platform = platform
         @database = database
         @rails_env = rails_env
+        @nginx_directives = options[:nginx_directives] || {}
       end
 
       def start 
@@ -52,8 +53,8 @@ module Conjure
           :passenger_user => "app",
           :passenger_ruby => "/usr/bin/ruby2.1",
           :passenger_app_env => @rails_env,
-        }
-        "server {" + options.map{|k, v| "  #{k} #{v};"}.join("\n") + "}\n"
+        }.merge @nginx_directives
+        "server {\n" + options.map{|k, v| "  #{k} #{v};"}.join("\n") + "\n}\n"
       end
     end
   end
