@@ -1,0 +1,254 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.digitalocean.com/v2//regions
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Authorization:
+      - Bearer <DIGITALOCEAN_API_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - cloudflare-nginx
+      Date:
+      - Wed, 01 Oct 2014 18:31:27 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=d80b6dccde2e6ca073aa7084aa95b2b5e1412188287905; expires=Mon, 23-Dec-2019
+        23:50:00 GMT; path=/; domain=.digitalocean.com; HttpOnly
+      Status:
+      - 200 OK
+      Ratelimit-Limit:
+      - '1200'
+      Ratelimit-Remaining:
+      - '1192'
+      Ratelimit-Reset:
+      - '1412189566'
+      Cache-Control:
+      - must-revalidate, private, max-age=0
+      X-Request-Id:
+      - 08c65ce6ec11e7d656980e4ddc08da9b
+      X-Runtime:
+      - '0.042577'
+      X-Rack-Cache:
+      - miss
+      Cf-Ray:
+      - 172abcbf62370f1b-IAD
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "regions":[
+            {
+              "slug":"nyc1",
+              "name":"New York 1",
+              "sizes":[
+                "512mb",
+                "8gb",
+                "16gb",
+                "32gb",
+                "48gb",
+                "64gb",
+                "1gb",
+                "2gb",
+                "4gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "backups"
+              ]
+            },
+            {
+              "slug":"ams1",
+              "name":"Amsterdam 1",
+              "sizes":[],
+              "available":false,
+              "features":[
+                "virtio",
+                "backups"
+              ]
+            },
+            {
+              "slug":"sfo1",
+              "name":"San Francisco 1",
+              "sizes":[
+                "2gb",
+                "4gb",
+                "8gb",
+                "1gb",
+                "16gb",
+                "32gb",
+                "48gb",
+                "512mb",
+                "64gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "backups",
+                "metadata"
+              ]
+            },
+            {
+              "slug":"nyc2",
+              "name":"New York 2",
+              "sizes":[
+                "1gb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "32gb",
+                "64gb",
+                "512mb",
+                "48gb",
+                "16gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups"
+              ]
+            },
+            {
+              "slug":"ams2",
+              "name":"Amsterdam 2",
+              "sizes":[
+                "512mb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "32gb",
+                "48gb",
+                "16gb",
+                "64gb",
+                "1gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups",
+                "metadata"
+              ]
+            },
+            {
+              "slug":"sgp1",
+              "name":"Singapore 1",
+              "sizes":[
+                "1gb",
+                "512mb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "16gb",
+                "32gb",
+                "48gb",
+                "64gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups",
+                "ipv6",
+                "metadata"
+              ]
+            },
+            {
+              "slug":"lon1",
+              "name":"London 1",
+              "sizes":[
+                "512mb",
+                "1gb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "32gb",
+                "48gb",
+                "64gb",
+                "16gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups",
+                "ipv6",
+                "metadata"
+              ]
+            },
+            {
+              "slug":"nyc3",
+              "name":"New York 3",
+              "sizes":[
+                "512mb",
+                "1gb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "16gb",
+                "32gb",
+                "48gb",
+                "64gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups",
+                "ipv6",
+                "metadata"
+              ]
+            },
+            {
+              "slug":"ams3",
+              "name":"Amsterdam 3",
+              "sizes":[
+                "512mb",
+                "1gb",
+                "2gb",
+                "4gb",
+                "8gb",
+                "16gb",
+                "32gb",
+                "48gb",
+                "64gb"
+              ],
+              "available":true,
+              "features":[
+                "virtio",
+                "private_networking",
+                "backups",
+                "ipv6",
+                "metadata"
+              ]
+            }
+          ],
+          "meta":{
+            "total":9
+          }
+        }
+    http_version: 
+  recorded_at: Wed, 01 Oct 2014 18:31:27 GMT
+recorded_with: VCR 2.9.3

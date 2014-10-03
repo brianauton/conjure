@@ -1,3 +1,4 @@
+require "conjure/digital_ocean/droplet"
 require "securerandom"
 
 module Conjure
@@ -10,7 +11,7 @@ module Conjure
       end
 
       def ip_address
-        @server.public_ip_address
+        @server.ip_address
       end
 
       def run(command)
@@ -36,35 +37,25 @@ module Conjure
 
       def self.create(name)
         puts "Creating DigitalOcean droplet..."
-        connection = Fog::Compute.new compute_options
-        delete_default_key connection
-        new connection.servers.bootstrap(bootstrap_options uniquify(name))
+        new DigitalOcean::Droplet.new(droplet_options uniquify(name))
       end
 
-      def self.compute_options
-        raise "Error: DIGITALOCEAN_API_KEY and DIGITALOCEAN_CLIENT_ID env vars must both be set." unless ENV["DIGITALOCEAN_API_KEY"] && ENV["DIGITALOCEAN_CLIENT_ID"]
+      def self.droplet_options(name)
+        raise "Error: DIGITALOCEAN_API_TOKEN must be set." unless ENV["DIGITALOCEAN_API_TOKEN"]
         {
-          :provider => :digitalocean,
-          :digitalocean_api_key => ENV["DIGITALOCEAN_API_KEY"],
-          :digitalocean_client_id => ENV["DIGITALOCEAN_CLIENT_ID"],
+          image: "docker",
+          key_data: key_data,
+          name: name,
+          region: "nyc3",
+          size: "512mb",
+          token: ENV["DIGITALOCEAN_API_TOKEN"],
         }
       end
 
-      def self.bootstrap_options(name)
-        ssh_dir = File.expand_path("~/.ssh")
-        raise "Error: ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub must exist." unless File.exist?(ssh_dir) && File.exist?("#{ssh_dir}/id_rsa") && File.exist?("#{ssh_dir}/id_rsa.pub")
-        {
-          :name => name,
-          :flavor_id =>  "66",
-          :region_id => "4",
-          :image_id => "5900200",
-          :private_key_path => "#{ssh_dir}/id_rsa",
-          :public_key_path => "#{ssh_dir}/id_rsa.pub",
-        }
-      end
-
-      def self.delete_default_key(connection)
-        connection.ssh_keys.find{|k| k.name=="fog_default"}.try :destroy
+      def self.key_data
+        ssh_dir = File.expand_path "~/.ssh"
+        raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(ssh_dir) && File.exist?("#{ssh_dir}/id_rsa.pub")
+        File.read "#{ssh_dir}/id_rsa.pub"
       end
 
       def self.uniquify(server_name)

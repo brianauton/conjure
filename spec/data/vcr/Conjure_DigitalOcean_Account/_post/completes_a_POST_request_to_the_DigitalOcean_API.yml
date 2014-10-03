@@ -1,0 +1,65 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.digitalocean.com/v2//account/keys
+    body:
+      encoding: UTF-8
+      string: '{"name":"bogus"}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Authorization:
+      - Bearer <DIGITALOCEAN_API_TOKEN>
+      Content-Type:
+      - application/json
+  response:
+    status:
+      code: 422
+      message: Unprocessable Entity
+    headers:
+      Server:
+      - cloudflare-nginx
+      Date:
+      - Wed, 01 Oct 2014 18:31:27 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=d56d38ce8e74c91eb2ebf7d22bd1a16bf1412188287721; expires=Mon, 23-Dec-2019
+        23:50:00 GMT; path=/; domain=.digitalocean.com; HttpOnly
+      Status:
+      - 422 Unprocessable Entity
+      Ratelimit-Limit:
+      - '1200'
+      Ratelimit-Remaining:
+      - '1193'
+      Ratelimit-Reset:
+      - '1412189566'
+      Cache-Control:
+      - no-cache
+      X-Request-Id:
+      - 885f23adb6be6308943b52ad7cd185a1
+      X-Runtime:
+      - '0.032767'
+      X-Rack-Cache:
+      - invalidate, pass
+      Cf-Ray:
+      - 172abcbe49810f15-IAD
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "id":"unprocessable_entity",
+          "message":"Key can't be blank"
+        }
+    http_version: 
+  recorded_at: Wed, 01 Oct 2014 18:31:27 GMT
+recorded_with: VCR 2.9.3
