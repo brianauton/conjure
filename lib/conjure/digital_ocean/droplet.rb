@@ -32,7 +32,7 @@ module Conjure
           sleep 5
           @properties = account.get("droplets/#{@properties['id']}")["droplet"]
         end
-        sleep 2
+        sleep 30
       end
 
       def account
