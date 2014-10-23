@@ -1,6 +1,8 @@
 require "conjure/provision/docker/template"
 require "conjure/provision/local_docker"
+require "conjure/provision/server"
 require "conjure/provision/postgres"
+require "conjure/provision/passenger"
 require "yaml"
 
 module Conjure

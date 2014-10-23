@@ -1,5 +1,6 @@
 require "conjure/provision/docker/host"
 require "conjure/provision/docker/image"
+require "tmpdir"
 
 module Conjure
   module Provision

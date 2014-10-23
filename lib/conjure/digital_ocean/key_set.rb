@@ -1,3 +1,4 @@
+require "conjure/digital_ocean/key"
 require "digest/sha1"
 
 module Conjure

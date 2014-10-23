@@ -1,3 +1,6 @@
+require "conjure/digital_ocean/account"
+require "conjure/digital_ocean/key_set"
+
 module Conjure
   module DigitalOcean
     class Droplet
