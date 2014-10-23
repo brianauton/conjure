@@ -1,6 +1,6 @@
-# conjure/passenger-ruby21:1.0.1
+# conjure/passenger-ruby21:1.0.2
 
-FROM phusion/passenger-ruby21:0.9.8
+FROM phusion/passenger-ruby21:0.9.14
 MAINTAINER Brian Auton brianauton@gmail.com
 ENV HOME /root
 

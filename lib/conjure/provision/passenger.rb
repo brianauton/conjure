@@ -27,7 +27,7 @@ module Conjure
       def dockerfile
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
-        file = Docker::Template.new("conjure/passenger-ruby21:1.0.1")
+        file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
         file.run apt_command if apt_command
         file.add_file public_key, "/root/.ssh/authorized_keys"
         file.add_file public_key, "/home/app/.ssh/authorized_keys"
