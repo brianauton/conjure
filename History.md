@@ -1,3 +1,8 @@
+### Version 0.2.7
+2014-10-23
+
+* Add missing require directives, needed to provision Rails 2 apps
+
 ### Version 0.2.6
 2014-10-23
 
