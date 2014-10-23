@@ -1,3 +1,8 @@
+### Version 0.2.6
+2014-10-23
+
+* Use DigitalOcean API v2 for provisioning
+
 ### Version 0.2.5
 2014-9-3
 
