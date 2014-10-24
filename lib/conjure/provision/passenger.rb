@@ -12,6 +12,7 @@ module Conjure
         @rails_env = rails_env
         @nginx_directives = options[:nginx_directives] || {}
         @system_packages = options[:system_packages] || []
+        @rubygems_version = options[:rubygems_version]
       end
 
       def start 
@@ -29,6 +30,7 @@ module Conjure
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
         file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
         file.run apt_command if apt_command
+        file.run rubygems_command if rubygems_command
         file.add_file public_key, "/root/.ssh/authorized_keys"
         file.add_file public_key, "/home/app/.ssh/authorized_keys"
         file.run "chown app.app /home/app/.ssh/authorized_keys"
@@ -42,6 +44,13 @@ module Conjure
       def apt_command
         if @system_packages.any?
           "apt-get update && apt-get install -y #{@system_packages.join ' '}"
+        end
+      end
+
+      def rubygems_command
+        if @rubygems_version
+          target_source = "/usr/lib/ruby/vendor_ruby/rubygems/defaults/operating_system.rb"
+          "sed -i '23d' #{target_source} && gem update --system #{@rubygems_version}"
         end
       end
 
