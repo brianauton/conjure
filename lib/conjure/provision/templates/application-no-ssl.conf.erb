@@ -1,0 +1,8 @@
+server {
+  listen 80;
+  root /home/app/application/current/public;
+  passenger_enabled on;
+  passenger_user app;
+  passenger_ruby /usr/bin/ruby2.1;
+  passenger_app_env <%= rails_env %>;
+}

@@ -22,7 +22,7 @@ module Conjure
       private
 
       def start_options
-        {:run_options => "-p 80:80 -p 2222:22"}
+        {:run_options => "-p 80:80 -p 443:443 -p 2222:22"}
       end
 
       def dockerfile
@@ -35,7 +35,9 @@ module Conjure
         file.add_file public_key, "/home/app/.ssh/authorized_keys"
         file.run "chown app.app /home/app/.ssh/authorized_keys"
         file.run "chown root.root /root/.ssh/authorized_keys"
-        file.add_file_data nginx_conf, "/etc/nginx/sites-enabled/application.conf"
+        file.add_file_data nginx_conf, "/etc/nginx/sites-available/application-no-ssl.conf"
+        file.add_file_data nginx_ssl_conf, "/etc/nginx/sites-available/application-ssl.conf"
+        file.run "ln -s /etc/nginx/sites-available/application-no-ssl.conf /etc/nginx/sites-enabled/application.conf"
         file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
         file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file
@@ -63,15 +65,17 @@ module Conjure
       end
 
       def nginx_conf
-        options = {
-          :listen => "80",
-          :root => "/home/app/application/current/public",
-          :passenger_enabled => "on",
-          :passenger_user => "app",
-          :passenger_ruby => "/usr/bin/ruby2.1",
-          :passenger_app_env => @rails_env,
-        }.merge @nginx_directives
-        "server {\n" + options.map{|k, v| "  #{k} #{v};"}.join("\n") + "\n}\n"
+        render_template "application-no-ssl.conf"
+      end
+
+      def nginx_ssl_conf
+        render_template "application-ssl.conf"
+      end
+
+      def render_template(name)
+        template_path = File.join File.dirname(__FILE__), "templates", "#{name}.erb"
+        template_data = File.read template_path
+        Erubis::Eruby.new(template_data).result :rails_env => @rails_env
       end
     end
   end
