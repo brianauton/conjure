@@ -1,3 +1,10 @@
+### Version 0.2.8
+2014-10-31
+
+* Add SSL configuration when provisioning
+* Support configurable rubygems version
+* Upgrade to latest Phusion base image
+
 ### Version 0.2.7
 2014-10-23
 
