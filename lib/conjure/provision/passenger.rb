@@ -22,7 +22,9 @@ module Conjure
       private
 
       def start_options
-        {:run_options => "-p 80:80 -p 443:443 -p 2222:22"}
+        {
+          :ports => {80 => 80, 443 => 443, 2222 => 22},
+        }
       end
 
       def dockerfile
