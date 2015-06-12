@@ -18,7 +18,7 @@ module Conjure
         end
 
         def started_container_id(image_name, daemon_command, run_options = nil)
-          all_options = "-d #{run_options.to_s} #{image_name} #{daemon_command}"
+          all_options = "-d --restart=always #{run_options.to_s} #{image_name} #{daemon_command}"
           @platform.run("docker run #{all_options}").strip
         end
 
