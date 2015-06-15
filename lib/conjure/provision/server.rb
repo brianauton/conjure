@@ -35,19 +35,19 @@ module Conjure
         run "mkswap /root/swapfile; swapon /root/swapfile"
       end
 
-      def self.create(name)
+      def self.create(name, options = {})
         puts "Creating DigitalOcean droplet..."
-        new DigitalOcean::Droplet.new(droplet_options uniquify(name))
+        new DigitalOcean::Droplet.new(droplet_options(uniquify(name), options))
       end
 
-      def self.droplet_options(name)
+      def self.droplet_options(name, options = {})
         raise "Error: DIGITALOCEAN_API_TOKEN must be set." unless ENV["DIGITALOCEAN_API_TOKEN"]
         {
           image: "docker",
           key_data: key_data,
           name: name,
           region: "nyc3",
-          size: "512mb",
+          size: (options[:instance_size] || "512mb"),
           token: ENV["DIGITALOCEAN_API_TOKEN"],
         }
       end

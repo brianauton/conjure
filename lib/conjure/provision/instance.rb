@@ -18,7 +18,7 @@ module Conjure
         if options[:local]
           platform = LocalDocker.new
         else
-          platform = Server.create "#{@app_name}-#{@rails_env}"
+          platform = Server.create "#{@app_name}-#{@rails_env}", @options
         end
 
         database = Postgres.new(platform)
