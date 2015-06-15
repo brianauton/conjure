@@ -31,7 +31,7 @@ module Conjure
       end
 
       def install_swap
-        run "dd if=/dev/zero of=/root/swapfile bs=1024 count=524288"
+        run "dd if=/dev/zero of=/root/swapfile bs=4096 count=524288"
         run "mkswap /root/swapfile; swapon /root/swapfile"
       end
 
