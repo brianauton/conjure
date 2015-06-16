@@ -23,6 +23,7 @@ module Conjure
 
       def start_options
         {
+          :linked_containers => @database.container_link,
           :name => "passenger",
           :ports => {80 => 80, 443 => 443, 2222 => 22},
           :volume_containers => [data_container_name],

@@ -18,20 +18,28 @@ module Conjure
         {
           "adapter" => "postgresql",
           "database" => @name,
-          "host" => @ip_address,
+          "host" => container_name,
           "username" => "db",
           "password" => @password,
           "template" => "template0",
         }
       end
 
+      def container_link
+        {container_name => container_name}
+      end
+
       private
 
       def start_options
         {
-          :name => "postgres",
+          :name => container_name,
           :volume_containers => [data_container_name],
         }
+      end
+
+      def container_name
+        "postgres"
       end
 
       def data_container_name

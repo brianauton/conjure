@@ -33,13 +33,15 @@ module Conjure
 
         def run_options(options)
           [
+            mapped_options("--link", options[:linked_containers]),
             ("--name #{options[:name]}" if options[:name]),
-            mapped_options("-p", options[:ports] || {}),
-            listed_options("--volumes-from", options[:volume_containers] || []),
+            mapped_options("-p", options[:ports]),
+            listed_options("--volumes-from", options[:volume_containers]),
           ].flatten.compact.join(" ")
         end
 
         def listed_options(command, values)
+          values ||= []
           values.map { |v| "#{command} #{v}" }
         end
 
