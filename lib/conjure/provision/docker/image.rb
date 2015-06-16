@@ -9,8 +9,12 @@ module Conjure
           @name = image_name
         end
 
-        def start(command, options = {})
-          container_id = @docker_host.started_container_id @name, command, run_options(options)
+        def start_volume(options = {})
+          @docker_host.started_container_id @name, "/bin/true", daemon_options(options)
+        end
+
+        def start_daemon(command, options = {})
+          container_id = @docker_host.started_container_id @name, command, daemon_options(options)
           sleep 2
           ip_address = @docker_host.container_ip_address container_id
           raise "Container failed to start" unless ip_address.present?
@@ -19,8 +23,23 @@ module Conjure
 
         private
 
+        def volume_options(options)
+          "-d " + run_options(options)
+        end
+
+        def daemon_options(options)
+          "-d --restart=always " + run_options(options)
+        end
+
         def run_options(options)
-          mapped_options("-p", options[:ports]).join(" ")
+          [
+            mapped_options("-p", options[:ports] || {}),
+            listed_options("--volumes-from", options[:volume_container_ids] || []),
+          ].flatten.join(" ")
+        end
+
+        def listed_options(command, values)
+          values.map { |v| "#{command} #{v}" }
         end
 
         def mapped_options(command, values)

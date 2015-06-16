@@ -25,6 +25,10 @@ module Conjure
           @commands << "RUN #{command}"
         end
 
+        def volume(name)
+          @commands << "VOLUME #{name}"
+        end
+
         def source
           @commands.join "\n"
         end
