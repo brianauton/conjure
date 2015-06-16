@@ -16,7 +16,7 @@ module Conjure
       end
 
       def start 
-        @ip_address = dockerfile.build(@platform).start("/sbin/my_init", start_options)
+        @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
       end
 
       private
@@ -24,10 +24,23 @@ module Conjure
       def start_options
         {
           :ports => {80 => 80, 443 => 443, 2222 => 22},
+          :volume_container_ids => [data_container_id],
         }
       end
 
-      def dockerfile
+      def data_container_id
+        data_template.build(@platform).start_volume
+      end
+
+      def data_template
+        file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
+        file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
+        file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
+        file.volume "/home/app/application"
+        file
+      end
+
+      def server_template
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
         file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
@@ -40,8 +53,6 @@ module Conjure
         file.add_file_data nginx_conf, "/etc/nginx/sites-available/application-no-ssl.conf"
         file.add_file_data nginx_ssl_conf, "/etc/nginx/sites-available/application-ssl.conf"
         file.run "ln -s /etc/nginx/sites-available/application-no-ssl.conf /etc/nginx/sites-enabled/application.conf"
-        file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
-        file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file
       end
 
