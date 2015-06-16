@@ -33,9 +33,10 @@ module Conjure
 
         def run_options(options)
           [
+            ("--name #{options[:name]}" if options[:name]),
             mapped_options("-p", options[:ports] || {}),
-            listed_options("--volumes-from", options[:volume_container_ids] || []),
-          ].flatten.join(" ")
+            listed_options("--volumes-from", options[:volume_containers] || []),
+          ].flatten.compact.join(" ")
         end
 
         def listed_options(command, values)

@@ -29,12 +29,14 @@ module Conjure
 
       def start_options
         {
-          :volume_container_ids => [data_container_id],
+          :name => "postgres",
+          :volume_containers => [data_container_name],
         }
       end
 
-      def data_container_id
-        data_template.build(@platform).start_volume
+      def data_container_name
+        data_template.build(@platform).start_volume(:name => "postgres_data")
+        "postgres_data"
       end
 
       def data_template

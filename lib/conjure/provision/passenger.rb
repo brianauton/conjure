@@ -23,13 +23,15 @@ module Conjure
 
       def start_options
         {
+          :name => "passenger",
           :ports => {80 => 80, 443 => 443, 2222 => 22},
-          :volume_container_ids => [data_container_id],
+          :volume_containers => [data_container_name],
         }
       end
 
-      def data_container_id
-        data_template.build(@platform).start_volume
+      def data_container_name
+        data_template.build(@platform).start_volume(:name => "passenger_data")
+        "passenger_data"
       end
 
       def data_template
