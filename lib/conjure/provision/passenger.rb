@@ -13,10 +13,22 @@ module Conjure
         @nginx_directives = options[:nginx_directives] || {}
         @system_packages = options[:system_packages] || []
         @rubygems_version = options[:rubygems_version]
+        @use_ssl = !!options[:ssl_hostname]
+        @ssl_hostname = options[:ssl_hostname] || "unknown"
       end
 
       def start 
         @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      end
+
+      def pending_files
+        return [] unless @use_ssl
+        [
+          "/etc/ssl/certs/application.crt",
+          "/etc/ssl/certs/root_and_intermediates.crt",
+          "/etc/ssl/private/application.key",
+          "/etc/ssl/dhparam.pem",
+        ]
       end
 
       private
@@ -55,7 +67,8 @@ module Conjure
         file.run "chown root.root /root/.ssh/authorized_keys"
         file.add_file_data nginx_conf, "/etc/nginx/sites-available/application-no-ssl.conf"
         file.add_file_data nginx_ssl_conf, "/etc/nginx/sites-available/application-ssl.conf"
-        file.run "ln -s /etc/nginx/sites-available/application-no-ssl.conf /etc/nginx/sites-enabled/application.conf"
+        which_config = @use_ssl ? "application-ssl" : "application-no-ssl"
+        file.run "ln -s /etc/nginx/sites-available/#{which_config}.conf /etc/nginx/sites-enabled/application.conf"
         file
       end
 
@@ -91,7 +104,7 @@ module Conjure
       def render_template(name)
         template_path = File.join File.dirname(__FILE__), "templates", "#{name}.erb"
         template_data = File.read template_path
-        Erubis::Eruby.new(template_data).result :rails_env => @rails_env
+        Erubis::Eruby.new(template_data).result :rails_env => @rails_env, :ssl_hostname => @ssl_hostname
       end
     end
   end

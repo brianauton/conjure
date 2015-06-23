@@ -39,7 +39,8 @@ module Conjure
           :ip_address => ip_address,
           :port => port,
           :user => "app",
-          :rails_env => @rails_env
+          :rails_env => @rails_env,
+          :pending_files => webserver.pending_files,
         }
       end
 
