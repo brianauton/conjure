@@ -36,7 +36,7 @@ module Conjure
       end
 
       def data_template
-        file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
+        file = Docker::Template.new("conjure/passenger-ruby22:1.0.0")
         file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
         file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file.volume "/home/app/application"
@@ -46,7 +46,7 @@ module Conjure
       def server_template
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
-        file = Docker::Template.new("conjure/passenger-ruby21:1.0.2")
+        file = Docker::Template.new("conjure/passenger-ruby22:1.0.0")
         file.run apt_command if apt_command
         file.run rubygems_command if rubygems_command
         file.add_file public_key, "/root/.ssh/authorized_keys"

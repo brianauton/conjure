@@ -8,7 +8,7 @@ server {
   root /home/app/application/current/public;
   passenger_enabled on;
   passenger_user app;
-  passenger_ruby /usr/bin/ruby2.1;
+  passenger_ruby /usr/bin/ruby2.2;
   passenger_app_env <%= rails_env %>;
 
   ssl_certificate /etc/ssl/certs/application.crt;

@@ -1,20 +1,20 @@
-# conjure/passenger-ruby21:1.0.2
+# conjure/passenger-ruby22:1.0.0
 
-FROM phusion/passenger-ruby21:0.9.14
+FROM phusion/passenger-ruby22:0.9.15
 MAINTAINER Brian Auton brianauton@gmail.com
 ENV HOME /root
 
 RUN apt-get update
 RUN apt-get -y install libsqlite3-dev libpq-dev
-RUN /build/nodejs.sh
 
 RUN rm -f /etc/service/nginx/down
 RUN rm -f /etc/nginx/sites-enabled/default
 ADD nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir -p /home/app/application/shared/bundle/ruby/2.1.0/bin
+RUN mkdir -p /home/app/application/shared/bundle/ruby/2.2.0/bin
 RUN chown -R app /home/app/application && chmod -R 755 /home/app/application
-RUN ln -s /usr/bin/node /home/app/application/shared/bundle/ruby/2.1.0/bin/node
+RUN ln -s /usr/bin/node /home/app/application/shared/bundle/ruby/2.2.0/bin/node
 
 RUN passwd -u app
+RUN rm -f /etc/service/sshd/down
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
