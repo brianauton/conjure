@@ -1,7 +1,6 @@
 module Conjure
   module Service
     class CloudServer
-      require "fog"
       require "pathname"
       attr_reader :name
 
