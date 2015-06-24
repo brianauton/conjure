@@ -1,3 +1,11 @@
+### Version 0.2.9
+2015-06-24
+
+* Add ssl_hostname and instance_size provisioning options
+* Use volumes to store data for provisioned containers
+* Make provisioned containers restart on reboot
+* Upgrade provisioned Ruby version to 2.2
+
 ### Version 0.2.8
 2014-10-31
 
