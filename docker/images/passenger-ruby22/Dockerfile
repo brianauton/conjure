@@ -1,11 +1,11 @@
-# conjure/passenger-ruby22:1.0.0
+# conjure/passenger-ruby22:1.0.1
 
 FROM phusion/passenger-ruby22:0.9.15
 MAINTAINER Brian Auton brianauton@gmail.com
 ENV HOME /root
 
 RUN apt-get update
-RUN apt-get -y install libsqlite3-dev libpq-dev
+RUN apt-get -y install libsqlite3-dev libpq-dev libruby2.2 ruby2.2
 
 RUN rm -f /etc/service/nginx/down
 RUN rm -f /etc/nginx/sites-enabled/default
