@@ -1,3 +1,8 @@
+### Version 0.2.10
+2015-06-24
+
+* Always upgrade to latest revision of provisioned Ruby version
+
 ### Version 0.2.9
 2015-06-24
 
