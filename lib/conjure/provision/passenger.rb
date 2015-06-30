@@ -12,6 +12,7 @@ module Conjure
         @rails_env = rails_env
         @nginx_directives = options[:nginx_directives] || {}
         @system_packages = options[:system_packages] || []
+        @ruby_version = options[:ruby_version] || "2.2"
         @rubygems_version = options[:rubygems_version]
         @use_ssl = !!options[:ssl_hostname]
         @ssl_hostname = options[:ssl_hostname] || "unknown"
@@ -47,8 +48,17 @@ module Conjure
         "passenger_data"
       end
 
+      def base_docker_image
+        {
+          "2.2" => "conjure/passenger-ruby22:1.0.1",
+          "2.1" => "conjure/passenger-ruby21:1.0.1",
+          "2.0" => "conjure/passenger-ruby20:1.0.1",
+          "1.9" => "conjure/passenger-ruby19:1.0.1",
+        }[@ruby_version] || raise("Unsupported ruby version #{@ruby_version.inspect}")
+      end
+
       def data_template
-        file = Docker::Template.new("conjure/passenger-ruby22:1.0.0")
+        file = Docker::Template.new(base_docker_image)
         file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
         file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
         file.volume "/home/app/application"
@@ -58,7 +68,7 @@ module Conjure
       def server_template
         public_key = File.expand_path("~/.ssh/id_rsa.pub")
         raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
-        file = Docker::Template.new("conjure/passenger-ruby22:1.0.1")
+        file = Docker::Template.new(base_docker_image)
         file.run apt_command if apt_command
         file.run rubygems_command if rubygems_command
         file.add_file public_key, "/root/.ssh/authorized_keys"
@@ -104,7 +114,11 @@ module Conjure
       def render_template(name)
         template_path = File.join File.dirname(__FILE__), "templates", "#{name}.erb"
         template_data = File.read template_path
-        Erubis::Eruby.new(template_data).result :rails_env => @rails_env, :ssl_hostname => @ssl_hostname
+        Erubis::Eruby.new(template_data).result(
+          :rails_env => @rails_env,
+          :ruby_version => @ruby_version,
+          :ssl_hostname => @ssl_hostname,
+        )
       end
     end
   end
