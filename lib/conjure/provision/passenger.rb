@@ -1,4 +1,5 @@
 require "conjure/provision/docker/template"
+require "erubis"
 require "securerandom"
 
 module Conjure
