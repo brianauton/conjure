@@ -91,8 +91,7 @@ module Conjure
 
       def rubygems_command
         if @rubygems_version
-          target_source = "/usr/lib/ruby/vendor_ruby/rubygems/defaults/operating_system.rb"
-          "sed -i '23d' #{target_source} && gem update --system #{@rubygems_version}"
+          "gem update --system #{@rubygems_version}"
         end
       end
 
