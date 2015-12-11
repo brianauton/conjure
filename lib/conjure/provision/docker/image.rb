@@ -17,7 +17,7 @@ module Conjure
           container_id = @docker_host.started_container_id @name, command, daemon_options(options)
           sleep 2
           ip_address = @docker_host.container_ip_address container_id
-          raise "Container failed to start" unless ip_address.present?
+          raise "Container failed to start" if ip_address.to_s == ""
           ip_address
         end
 
