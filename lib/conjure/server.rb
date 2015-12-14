@@ -26,15 +26,15 @@ module Conjure
       command.gsub("'", "'\"'\"'")
     end
 
-    def self.create(name, options = {})
-      new DigitalOcean::Droplet.new(droplet_options(name, options))
+    def self.create(name_prefix, options = {})
+      new DigitalOcean::Droplet.new(droplet_options(name_prefix, options))
     end
 
-    def self.droplet_options(name, options = {})
+    def self.droplet_options(name_prefix, options = {})
       {
         image: "docker",
         key_data: key_data,
-        name_prefix: name,
+        name_prefix: name_prefix,
         region: "nyc3",
         size: (options[:instance_size] || "512mb"),
       }
