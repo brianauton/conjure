@@ -1,102 +1,50 @@
+require "conjure/docker/template"
+require "conjure/local_docker"
+require "conjure/server"
+require "conjure/postgres"
+require "conjure/passenger"
+require "yaml"
+
 module Conjure
   class Instance
-    def initialize(options)
-      @origin = options[:origin]
-      @branch = options[:branch]
-      @rails_environment = options[:rails_environment]
-      @server = options[:server]
+    def initialize(app_name, rails_env, options = {})
+      @app_name = app_name
+      @rails_env = rails_env
+      @options = options
     end
 
-    def self.where(options = {})
-      Collection.new(options)
-    end
-
-    def origin
-      @origin ||= @server.name.split("-")[0]
-    end
-
-    def rails_environment
-      @rails_environment ||= @server.name.split("-")[1]
-    end
-
-    def ip_address
-      @server.ip_address
-    end
-
-    def shell
-      rails_server.base_image
-    end
-
-    def branch
-      @branch ||= codebase.branch
-    end
-
-    def database
-      codebase.database
-    end
-
-    def create
-      @server_name = Service::CloudServer.ensure_unique_name(server_name)
-      deploy
-    end
-
-    def deploy
-      Log.info "[deploy] Deploying #{branch} to #{rails_environment}"
-      codebase.install
-      rails_server.run
-      Log.info "[deploy] Application deployed to #{ip_address}"
-    end
-
-    def codebase
-      @codebase ||= Service::RailsCodebase.new target, origin, @branch, rails_environment
-    end
-
-    def rails_server
-      @rails_server ||= Service::RailsServer.new target, rails_environment
-    end
-
-    def server_name
-      @server_name ||= "#{application_name}-#{rails_environment}"
-    end
-
-    def server
-      @server ||= Service::CloudServer.new(server_name)
-    end
-
-    def target
-      @target ||= Target.new(:machine_name => server.name)
-    end
-
-    def application_name
-      Application.new(:origin => @origin).name
-    end
-
-    def status
-      "running"
-    end
-
-    def name
-      server.name
-    end
-
-    class Collection
-      include Enumerable
-
-      def initialize(options)
-        @origin = options[:origin]
+    def provision(options = {})
+      if options[:local]
+        platform = LocalDocker.new
+      else
+        platform = Server.create "#{@app_name}-#{@rails_env}", @options
       end
 
-      def application_name
-        Application.new(:origin => @origin).name
-      end
+      database = Postgres.new(platform)
+      database.start
 
-      def each(&block)
-        return unless @origin
-        Service::CloudServer.each_with_name_prefix("#{application_name}-") do |server|
-          match = server.name.match(/^#{application_name}-([^-]+)(-[0-9]+)?$/)
-          yield Instance.new(:server => server) if match
-        end
-      end
+      webserver = Passenger.new(platform, database, @rails_env, @options)
+      webserver.start
+      passenger_ip = webserver.ip_address
+
+      port = platform.ip_address ? "2222" : "22"
+      ip_address = platform.ip_address || passenger_ip
+
+      host = "root@#{ip_address} -p #{port}"
+
+      sleep 1
+      remote_command host, "/etc/init.d/nginx restart"
+      {
+        :ip_address => ip_address,
+        :port => port,
+        :user => "app",
+        :rails_env => @rails_env,
+        :pending_files => webserver.pending_files,
+      }
+    end
+
+    def remote_command(host, command)
+      `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{host} #{command}`
     end
   end
 end
