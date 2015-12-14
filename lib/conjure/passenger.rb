@@ -10,7 +10,7 @@ module Conjure
       @platform = platform
       @database = database
       @rails_env = rails_env
-      @nginx_directives = options[:nginx_directives] || {}
+      @max_upload_mb = options[:max_upload_mb] || 20
       @system_packages = options[:system_packages] || []
       @ruby_version = options[:ruby_version] || "2.2"
       @rubygems_version = options[:rubygems_version]
@@ -117,6 +117,7 @@ module Conjure
         :rails_env => @rails_env,
         :ruby_version => @ruby_version,
         :ssl_hostname => @ssl_hostname,
+        :max_upload_mb => @max_upload_mb,
       )
     end
   end
