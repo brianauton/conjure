@@ -1,3 +1,5 @@
+require "conjure/docker/container"
+
 module Conjure
   module Docker
     class Host
@@ -16,14 +18,9 @@ module Conjure
         end
       end
 
-      def started_container_id(image_name, daemon_command, run_options = nil)
-        all_options = "#{run_options.to_s} #{image_name} #{daemon_command}"
-        @platform.run("docker run #{all_options}").strip
-      end
-
-      def container_ip_address(container_id)
-        format = "{{ .NetworkSettings.IPAddress }}"
-        @platform.run("docker inspect --format '#{format}' #{container_id}").strip
+      def start(image_name, daemon_command, options = {})
+        all_options = "#{start_options options} #{image_name} #{daemon_command}"
+        Container.new @platform, @platform.run("docker run #{all_options}").strip, options[:name]
       end
 
       private
@@ -38,6 +35,27 @@ module Conjure
       ensure
         `rm #{local_archive}`
         @platform.run "rm -Rf #{remote_path} #{remote_archive}"
+      end
+
+      def start_options(options)
+        [
+          "-d",
+          "--restart=always",
+          mapped_options("--link", options[:linked_containers]),
+          ("--name #{options[:name]}" if options[:name]),
+          mapped_options("-p", options[:ports]),
+          listed_options("--volumes-from", options[:volume_containers]),
+        ].flatten.compact.join(" ")
+      end
+
+      def listed_options(command, values)
+        values ||= []
+        values.map { |v| "#{command} #{v}" }
+      end
+
+      def mapped_options(command, values)
+        values ||= {}
+        values.map { |from, to| "#{command} #{from}:#{to}" }
       end
     end
   end

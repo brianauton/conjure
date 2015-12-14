@@ -10,7 +10,7 @@ module Conjure
     end
 
     def install
-      @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
     end
 
     def rails_config
@@ -37,7 +37,7 @@ module Conjure
     def start_options
       {
         :name => container_name,
-        :volume_containers => [data_container_name],
+        :volume_containers => [data_container.name],
       }
     end
 
@@ -45,9 +45,8 @@ module Conjure
       "postgres"
     end
 
-    def data_container_name
-      data_template.build(@platform).start_volume(:name => "postgres_data")
-      "postgres_data"
+    def data_container
+      data_template.build(@platform).start_volume name: "postgres_data"
     end
 
     def data_template

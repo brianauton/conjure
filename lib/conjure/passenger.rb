@@ -4,8 +4,6 @@ require "securerandom"
 
 module Conjure
   class Passenger
-    attr_reader :ip_address
-
     def initialize(platform, database, rails_env, options)
       @platform = platform
       @database = database
@@ -19,7 +17,7 @@ module Conjure
     end
 
     def install
-      @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
     end
 
     def pending_files
@@ -39,13 +37,12 @@ module Conjure
         :linked_containers => @database.container_link,
         :name => "passenger",
         :ports => {80 => 80, 443 => 443, 2222 => 22},
-        :volume_containers => [data_container_name],
+        :volume_containers => [data_container.name],
       }
     end
 
-    def data_container_name
-      data_template.build(@platform).start_volume(:name => "passenger_data")
-      "passenger_data"
+    def data_container
+      data_template.build(@platform).start_volume name: "passenger_data"
     end
 
     def base_docker_image
