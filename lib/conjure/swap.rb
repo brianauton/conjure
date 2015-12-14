@@ -15,6 +15,10 @@ module Conjure
       end
     end
 
+    def pending_files
+      []
+    end
+
     private
 
     def exists?

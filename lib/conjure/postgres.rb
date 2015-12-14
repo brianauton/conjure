@@ -9,7 +9,7 @@ module Conjure
       @password = new_password
     end
 
-    def start
+    def install
       @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
     end
 
@@ -26,6 +26,10 @@ module Conjure
 
     def container_link
       {container_name => container_name}
+    end
+
+    def pending_files
+      []
     end
 
     private

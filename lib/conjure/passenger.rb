@@ -18,7 +18,7 @@ module Conjure
       @ssl_hostname = options[:ssl_hostname] || "unknown"
     end
 
-    def start
+    def install
       @ip_address = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
     end
 

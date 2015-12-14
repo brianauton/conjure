@@ -14,30 +14,27 @@ module Conjure
     end
 
     def provision(options = {})
-      platform = Server.create "#{@app_name}-#{@rails_env}", @options
-      Swap.new(platform).install
-
-      database = Postgres.new(platform)
-      database.start
-
-      webserver = Passenger.new(platform, database, @rails_env, @options)
-      webserver.start
-      passenger_ip = webserver.ip_address
-
-      port = platform.ip_address ? "2222" : "22"
-      ip_address = platform.ip_address || passenger_ip
-
-      host = "root@#{ip_address} -p #{port}"
-
+      @server = Server.create "#{@app_name}-#{@rails_env}", @options
+      components.each(&:install)
       sleep 1
-      remote_command host, "/etc/init.d/nginx restart"
+      remote_command "root@#{@server.ip_address} -p 2222", "/etc/init.d/nginx restart"
       {
-        :ip_address => ip_address,
-        :port => port,
+        :ip_address => @server.ip_address,
+        :port => 2222,
         :user => "app",
         :rails_env => @rails_env,
-        :pending_files => webserver.pending_files,
+        :pending_files => components.flat_map(&:pending_files),
       }
+    end
+
+    private
+
+    def components
+      @components ||= [
+        Swap.new(@server),
+        database = Postgres.new(@server),
+        Passenger.new(@server, database, @rails_env, @options),
+      ]
     end
 
     def remote_command(host, command)
