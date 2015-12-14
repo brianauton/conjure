@@ -14,15 +14,15 @@ module Conjure
     end
 
     def run(command)
-      `ssh #{ssh_options} root@#{ip_address} '#{shell_escape_single_quotes command}'`
+      `ssh #{self.class.ssh_options} root@#{ip_address} '#{shell_escape_single_quotes command}'`
     end
 
     def send_file(local_name, remote_name)
-      `scp #{ssh_options} #{local_name} root@#{ip_address}:#{remote_name}`
+      `scp #{self.class.ssh_options} #{local_name} root@#{ip_address}:#{remote_name}`
     end
 
-    def ssh_options
-      "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    def self.ssh_options
+      "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
     end
 
     def shell_escape_single_quotes(command)
