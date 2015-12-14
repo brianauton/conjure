@@ -4,10 +4,10 @@ require "securerandom"
 
 module Conjure
   class Passenger
-    def initialize(platform, database, rails_env, options)
+    def initialize(platform, options)
       @platform = platform
-      @database = database
-      @rails_env = rails_env
+      @database = options[:database]
+      @rails_env = options[:rails_env]
       @max_upload_mb = options[:max_upload_mb] || 20
       @system_packages = options[:system_packages] || []
       @ruby_version = options[:ruby_version] || "2.2"

@@ -32,7 +32,7 @@ module Conjure
       @components ||= [
         Swap.new(@server),
         database = Postgres.new(@server),
-        Passenger.new(@server, database, @options[:rails_env], @options),
+        Passenger.new(@server, @options.merge(database: database)),
       ]
     end
   end
