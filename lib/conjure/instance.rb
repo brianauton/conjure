@@ -14,8 +14,6 @@ module Conjure
     def provision(options = {})
       @server = Server.create server_name_prefix, @options
       components.each(&:install)
-      sleep 1
-      remote_command "root@#{@server.ip_address} -p 2222", "/etc/init.d/nginx restart"
       {
         :ip_address => @server.ip_address,
         :port => 2222,
@@ -36,10 +34,6 @@ module Conjure
         database = Postgres.new(@server),
         Passenger.new(@server, database, @options[:rails_env], @options),
       ]
-    end
-
-    def remote_command(host, command)
-      `ssh #{Server.ssh_options} #{host} #{command}`
     end
   end
 end

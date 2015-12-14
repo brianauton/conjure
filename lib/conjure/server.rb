@@ -11,7 +11,7 @@ module Conjure
     end
 
     def run(command)
-      `ssh #{self.class.ssh_options} root@#{ip_address} '#{shell_escape_single_quotes command}'`
+      `ssh #{self.class.ssh_options} root@#{ip_address} #{quote_command command}`
     end
 
     def send_file(local_name, remote_name)
@@ -22,8 +22,8 @@ module Conjure
       "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
     end
 
-    def shell_escape_single_quotes(command)
-      command.gsub("'", "'\"'\"'")
+    def quote_command(command)
+      "'" + command.gsub("'", "'\"'\"'") + "'"
     end
 
     def self.create(name_prefix, options = {})

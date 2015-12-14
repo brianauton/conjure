@@ -17,7 +17,9 @@ module Conjure
     end
 
     def install
-      server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      container = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      sleep 1
+      container.run "/etc/init.d/nginx restart"
     end
 
     def pending_files

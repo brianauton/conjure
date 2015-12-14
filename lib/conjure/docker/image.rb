@@ -13,9 +13,10 @@ module Conjure
       end
 
       def start_daemon(command, options = {})
-        container = @docker_host.start @name, command, options
-        sleep 2
-        raise "Container failed to start" unless container.ip_address
+        @docker_host.start(@name, command, options).tap do |container|
+          sleep 2
+          raise "Container failed to start" unless container.ip_address
+        end
       end
     end
   end
