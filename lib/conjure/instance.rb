@@ -1,5 +1,4 @@
 require "conjure/docker/template"
-require "conjure/local_docker"
 require "conjure/server"
 require "conjure/postgres"
 require "conjure/passenger"
@@ -14,11 +13,7 @@ module Conjure
     end
 
     def provision(options = {})
-      if options[:local]
-        platform = LocalDocker.new
-      else
-        platform = Server.create "#{@app_name}-#{@rails_env}", @options
-      end
+      platform = Server.create "#{@app_name}-#{@rails_env}", @options
 
       database = Postgres.new(platform)
       database.start
