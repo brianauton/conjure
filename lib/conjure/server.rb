@@ -4,7 +4,6 @@ module Conjure
   class Server
     def initialize(server)
       @server = server
-      install_swap
     end
 
     def ip_address
@@ -25,12 +24,6 @@ module Conjure
 
     def shell_escape_single_quotes(command)
       command.gsub("'", "'\"'\"'")
-    end
-
-    def install_swap
-      puts "Installing swap space..."
-      run "dd if=/dev/zero of=/root/swapfile bs=4096 count=524288"
-      run "mkswap /root/swapfile; swapon /root/swapfile"
     end
 
     def self.create(name, options = {})

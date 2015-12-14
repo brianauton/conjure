@@ -1,5 +1,6 @@
 require "conjure/docker/template"
 require "conjure/server"
+require "conjure/swap"
 require "conjure/postgres"
 require "conjure/passenger"
 require "yaml"
@@ -14,6 +15,7 @@ module Conjure
 
     def provision(options = {})
       platform = Server.create "#{@app_name}-#{@rails_env}", @options
+      Swap.new(platform).install
 
       database = Postgres.new(platform)
       database.start
