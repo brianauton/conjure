@@ -1,11 +1,9 @@
 require "conjure/digital_ocean/droplet"
-require "securerandom"
 
 module Conjure
   class Server
     def initialize(server)
       @server = server
-      puts "Configuring droplet..."
       install_swap
     end
 
@@ -30,24 +28,22 @@ module Conjure
     end
 
     def install_swap
+      puts "Installing swap space..."
       run "dd if=/dev/zero of=/root/swapfile bs=4096 count=524288"
       run "mkswap /root/swapfile; swapon /root/swapfile"
     end
 
     def self.create(name, options = {})
-      puts "Creating DigitalOcean droplet..."
-      new DigitalOcean::Droplet.new(droplet_options(uniquify(name), options))
+      new DigitalOcean::Droplet.new(droplet_options(name, options))
     end
 
     def self.droplet_options(name, options = {})
-      raise "Error: DIGITALOCEAN_API_TOKEN must be set." unless ENV["DIGITALOCEAN_API_TOKEN"]
       {
         image: "docker",
         key_data: key_data,
-        name: name,
+        name_prefix: name,
         region: "nyc3",
         size: (options[:instance_size] || "512mb"),
-        token: ENV["DIGITALOCEAN_API_TOKEN"],
       }
     end
 
@@ -55,22 +51,6 @@ module Conjure
       ssh_dir = File.expand_path "~/.ssh"
       raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(ssh_dir) && File.exist?("#{ssh_dir}/id_rsa.pub")
       File.read "#{ssh_dir}/id_rsa.pub"
-    end
-
-    def self.uniquify(server_name)
-      "#{server_name}-#{SecureRandom.hex 4}"
-    end
-
-    def with_directory(local_path, &block)
-      local_archive = remote_archive = "/tmp/archive.tar.gz"
-      remote_path = "/tmp/unpacked_archive"
-      `cd #{local_path}; tar czf #{local_archive} *`
-      send_file local_archive, remote_archive
-      run "mkdir #{remote_path}; cd #{remote_path}; tar mxzf #{remote_archive}"
-      yield remote_path
-    ensure
-      `rm #{local_archive}`
-      run "rm -Rf #{remote_path} #{remote_archive}"
     end
   end
 end

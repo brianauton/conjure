@@ -1,5 +1,6 @@
 require "conjure/digital_ocean/account"
 require "conjure/digital_ocean/key_set"
+require "securerandom"
 
 module Conjure
   module DigitalOcean
@@ -20,9 +21,10 @@ module Conjure
       private
 
       def create
+        puts "Creating DigitalOcean droplet..."
         response = account.post("droplets", {
           image: @options[:image],
-          name: @options[:name],
+          name: "#{@options[:name_prefix]}-#{SecureRandom.hex 4}",
           region: @options[:region],
           size: @options[:size],
           ssh_keys: [key.id],
@@ -39,7 +41,8 @@ module Conjure
       end
 
       def account
-        @account ||= Account.new(:token => @options[:token])
+        raise "Error: DIGITALOCEAN_API_TOKEN must be set." unless ENV["DIGITALOCEAN_API_TOKEN"]
+        @account ||= Account.new(:token => ENV["DIGITALOCEAN_API_TOKEN"])
       end
 
       def key
