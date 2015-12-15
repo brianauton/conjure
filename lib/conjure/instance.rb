@@ -14,12 +14,22 @@ module Conjure
     def provision(options = {})
       @server = Server.create server_name_prefix, @options
       components.each(&:install)
-      {
-        :ip_address => @server.ip_address,
-        :port => 2222,
-        :user => "app",
-        :pending_files => components.flat_map(&:pending_files),
-      }
+    end
+
+    def ip_address
+      @server.ip_address
+    end
+
+    def port
+      2222
+    end
+
+    def user
+      "app"
+    end
+
+    def pending_files
+      components.flat_map(&:pending_files)
     end
 
     private
