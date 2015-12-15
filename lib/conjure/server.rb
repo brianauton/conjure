@@ -1,15 +1,7 @@
 require "conjure/digital_ocean/droplet"
 
 module Conjure
-  class Server
-    def initialize(server)
-      @server = server
-    end
-
-    def ip_address
-      @server.ip_address
-    end
-
+  class Server < Struct.new(:ip_address)
     def run(command)
       `ssh #{self.class.ssh_options} root@#{ip_address} #{quote_command command}`
     end
@@ -27,7 +19,7 @@ module Conjure
     end
 
     def self.create(name_prefix, options = {})
-      new DigitalOcean::Droplet.new(droplet_options(name_prefix, options))
+      new DigitalOcean::Droplet.new(droplet_options(name_prefix, options)).ip_address
     end
 
     def self.droplet_options(name_prefix, options = {})
