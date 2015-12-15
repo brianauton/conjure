@@ -7,12 +7,17 @@ require "yaml"
 
 module Conjure
   class Instance
-    def initialize(options = {})
+    def initialize(ip_address, options)
+      @server = Server.new ip_address
       @options = options
     end
 
-    def provision(options = {})
-      @server = Server.create server_name_prefix, @options
+    def self.create(options)
+      @server = Server.create server_name_prefix(options), options
+      new(@server.ip_address, options).tap(&:update)
+    end
+
+    def update
       components.each(&:install)
     end
 
@@ -34,8 +39,8 @@ module Conjure
 
     private
 
-    def server_name_prefix
-      "#{@options[:app_name]}-#{@options[:rails_env]}"
+    def self.server_name_prefix(options)
+      "#{options[:app_name]}-#{options[:rails_env]}"
     end
 
     def components

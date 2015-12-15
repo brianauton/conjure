@@ -1,6 +1,7 @@
 ### Unreleased
 
 * API change: remove Provision namespace
+* API change: new Instance syntax to support updating existing Instances
 * API change: remove nginx_directives option and add max_upload_mb
 
 ### Version 0.2.10
