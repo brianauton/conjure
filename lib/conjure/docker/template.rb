@@ -32,6 +32,16 @@ module Conjure
         @commands.join "\n"
       end
 
+      def start_daemon(server, command, options = {})
+        build_image(server).start_daemon(command, options)
+      end
+
+      def start_volume(server, options = {})
+        build_image(server).start_volume(options)
+      end
+
+      private
+
       def prepare_build_directory(&block)
         Dir.mktmpdir do |dir|
           @file_data.merge("Dockerfile" => source).each do |filename, data|
@@ -41,8 +51,8 @@ module Conjure
         end
       end
 
-      def build(platform)
-        docker_host = Host.new(platform)
+      def build_image(server)
+        docker_host = Host.new(server)
         image_name = prepare_build_directory do |dir|
           docker_host.built_image_name dir
         end

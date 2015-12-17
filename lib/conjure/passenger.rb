@@ -17,7 +17,7 @@ module Conjure
     end
 
     def install
-      container = server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      container = server_template.start_daemon(@platform, "/sbin/my_init", start_options)
       sleep 1
       container.run "/etc/init.d/nginx restart"
     end
@@ -44,7 +44,7 @@ module Conjure
     end
 
     def data_container
-      data_template.build(@platform).start_volume name: "passenger_data"
+      data_template.start_volume(@platform, name: "passenger_data")
     end
 
     def base_docker_image

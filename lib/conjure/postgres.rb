@@ -10,7 +10,7 @@ module Conjure
     end
 
     def install
-      server_template.build(@platform).start_daemon("/sbin/my_init", start_options)
+      server_template.start_daemon(@platform, "/sbin/my_init", start_options)
     end
 
     def rails_config
@@ -46,7 +46,7 @@ module Conjure
     end
 
     def data_container
-      data_template.build(@platform).start_volume name: "postgres_data"
+      data_template.start_volume(@platform, name: "postgres_data")
     end
 
     def data_template
