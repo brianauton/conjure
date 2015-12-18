@@ -32,12 +32,20 @@ module Conjure
         @commands.join "\n"
       end
 
-      def start_daemon(server, command, options = {})
-        build_image(server).start_daemon(command, options)
+      def start_daemon(server, command, volumes = {}, options = {})
+        image = build_image(server)
+        volume_containers = volumes.map do |name, path|
+          volume_template = Docker::Template.new(image.name)
+          volume_template.volume path
+          volume_template.start_volume(server, name: name)
+          name
+        end
+        image.start_daemon(command, options.merge(volume_containers: volume_containers))
       end
 
       def start_volume(server, options = {})
-        build_image(server).start_volume(options)
+        image = build_image(server)
+        image.start_volume(options)
       end
 
       private

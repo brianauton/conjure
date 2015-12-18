@@ -1,7 +1,7 @@
 module Conjure
   module Docker
     class Image
-      attr_reader :image_name
+      attr_reader :name
 
       def initialize(docker_host, image_name)
         @docker_host = docker_host

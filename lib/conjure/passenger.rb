@@ -17,7 +17,7 @@ module Conjure
     end
 
     def install
-      server_template.start_daemon(@server, "/sbin/my_init", start_options)
+      server_template.start_daemon(@server, "/sbin/my_init", volumes, start_options)
     end
 
     def pending_files
@@ -32,17 +32,16 @@ module Conjure
 
     private
 
+    def volumes
+      { "passenger_data" => "/home/app/application" }
+    end
+
     def start_options
       {
         :linked_containers => @database.container_link,
         :name => "passenger",
         :ports => {80 => 80, 443 => 443, 2222 => 22},
-        :volume_containers => [data_container.name],
       }
-    end
-
-    def data_container
-      data_template.start_volume(@server, name: "passenger_data")
     end
 
     def base_docker_image
@@ -52,14 +51,6 @@ module Conjure
         "2.0" => "conjure/passenger-ruby20:1.0.1",
         "1.9" => "conjure/passenger-ruby19:1.0.1",
       }[@ruby_version] || raise("Unsupported ruby version #{@ruby_version.inspect}")
-    end
-
-    def data_template
-      file = Docker::Template.new(base_docker_image)
-      file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
-      file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
-      file.volume "/home/app/application"
-      file
     end
 
     def server_template
@@ -76,6 +67,8 @@ module Conjure
       file.add_file_data nginx_ssl_conf, "/etc/nginx/sites-available/application-ssl.conf"
       which_config = @use_ssl ? "application-ssl" : "application-no-ssl"
       file.run "ln -s /etc/nginx/sites-available/#{which_config}.conf /etc/nginx/sites-enabled/application.conf"
+      file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
+      file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
       file
     end
 
