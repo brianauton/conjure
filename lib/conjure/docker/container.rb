@@ -14,10 +14,6 @@ module Conjure
         address = @server.run("docker inspect --format '#{format}' #{@id}").strip
         address == "" ? nil : address
       end
-
-      def run(command)
-        @server.run "docker exec #{@id} sh -c #{@server.quote_command command}"
-      end
     end
   end
 end
