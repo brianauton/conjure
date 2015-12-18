@@ -94,11 +94,11 @@ module Conjure
     end
 
     def database_yml
-      {@rails_env => @database.rails_config}.to_yaml
+      {@rails_env.to_s => @database.rails_config}.to_yaml
     end
 
     def secrets_yml
-      {@rails_env => {"secret_key_base" => SecureRandom.hex(64)}}.to_yaml
+      {@rails_env.to_s => {"secret_key_base" => SecureRandom.hex(64)}}.to_yaml
     end
 
     def nginx_conf
