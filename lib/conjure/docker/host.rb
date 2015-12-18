@@ -3,13 +3,13 @@ require "conjure/docker/container"
 module Conjure
   module Docker
     class Host
-      def initialize(platform)
-        @platform = platform
+      def initialize(server)
+        @server = server
       end
 
       def built_image_name(dockerfile_directory)
         result = with_directory(dockerfile_directory) do |remote_dir|
-          @platform.run "docker build #{remote_dir}"
+          @server.run "docker build #{remote_dir}"
         end
         if match = result.match(/Successfully built ([0-9a-z]+)/)
           match[1]
@@ -20,7 +20,7 @@ module Conjure
 
       def start(image_name, daemon_command, options = {})
         all_options = "#{start_options options} #{image_name} #{daemon_command}"
-        Container.new @platform, @platform.run("docker run #{all_options}").strip, options[:name]
+        Container.new @server, @server.run("docker run #{all_options}").strip, options[:name]
       end
 
       private
@@ -29,12 +29,12 @@ module Conjure
         local_archive = remote_archive = "/tmp/archive.tar.gz"
         remote_path = "/tmp/unpacked_archive"
         `cd #{local_path}; tar czf #{local_archive} *`
-        @platform.send_file local_archive, remote_archive
-        @platform.run "mkdir #{remote_path}; cd #{remote_path}; tar mxzf #{remote_archive}"
+        @server.send_file local_archive, remote_archive
+        @server.run "mkdir #{remote_path}; cd #{remote_path}; tar mxzf #{remote_archive}"
         yield remote_path
       ensure
         `rm #{local_archive}`
-        @platform.run "rm -Rf #{remote_path} #{remote_archive}"
+        @server.run "rm -Rf #{remote_path} #{remote_archive}"
       end
 
       def start_options(options)

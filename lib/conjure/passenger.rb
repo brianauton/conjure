@@ -4,8 +4,8 @@ require "securerandom"
 
 module Conjure
   class Passenger
-    def initialize(platform, options)
-      @platform = platform
+    def initialize(server, options)
+      @server = server
       @database = options[:database]
       @rails_env = options[:rails_env]
       @max_upload_mb = options[:max_upload_mb] || 20
@@ -17,7 +17,7 @@ module Conjure
     end
 
     def install
-      server_template.start_daemon(@platform, "/sbin/my_init", start_options)
+      server_template.start_daemon(@server, "/sbin/my_init", start_options)
     end
 
     def pending_files
@@ -42,7 +42,7 @@ module Conjure
     end
 
     def data_container
-      data_template.start_volume(@platform, name: "passenger_data")
+      data_template.start_volume(@server, name: "passenger_data")
     end
 
     def base_docker_image

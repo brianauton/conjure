@@ -3,14 +3,14 @@ require "securerandom"
 
 module Conjure
   class Postgres
-    def initialize(platform)
-      @platform = platform
+    def initialize(server)
+      @server = server
       @name = "conjure_db_#{SecureRandom.hex 8}"
       @password = new_password
     end
 
     def install
-      server_template.start_daemon(@platform, "/sbin/my_init", start_options)
+      server_template.start_daemon(@server, "/sbin/my_init", start_options)
     end
 
     def rails_config
@@ -46,7 +46,7 @@ module Conjure
     end
 
     def data_container
-      data_template.start_volume(@platform, name: "postgres_data")
+      data_template.start_volume(@server, name: "postgres_data")
     end
 
     def data_template
