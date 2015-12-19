@@ -19,8 +19,14 @@ module Conjure
       end
 
       def start(image_name, daemon_command, options = {})
+        container_name = options[:name]
         all_options = "#{start_options options} #{image_name} #{daemon_command}"
-        Container.new @server, @server.run("docker run #{all_options}").strip, options[:name]
+        if running_container_names.include? container_name
+          puts "#{container_name} container already running."
+        else
+          puts "#{container_name} container not detected, starting..."
+          Container.new @server, @server.run("docker run #{all_options}").strip, container_name
+        end
       end
 
       private
@@ -56,6 +62,10 @@ module Conjure
       def mapped_options(command, values)
         values ||= {}
         values.map { |from, to| "#{command} #{from}:#{to}" }
+      end
+
+      def running_container_names
+        @server.run("docker ps --format='{{.Names}}'").split("\n").compact
       end
     end
   end
