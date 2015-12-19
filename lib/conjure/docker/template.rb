@@ -1,5 +1,4 @@
 require "conjure/docker/host"
-require "conjure/docker/image"
 require "tmpdir"
 
 module Conjure
@@ -33,19 +32,24 @@ module Conjure
       end
 
       def start_daemon(server, command, volumes = {}, options = {})
-        image = build_image(server)
+        docker_host = Host.new(server)
+        image_name = prepare_build_directory { |dir| docker_host.built_image_name dir }
         volume_containers = volumes.map do |name, path|
-          volume_template = Docker::Template.new(image.name)
+          volume_template = Docker::Template.new(image_name)
           volume_template.volume path
           volume_template.start_volume(server, name: name)
           name
         end
-        image.start_daemon(command, options.merge(volume_containers: volume_containers))
+        options = options.merge(volume_containers: volume_containers)
+        container = docker_host.start(image_name, command, options)
+        sleep 2
+        raise "Container failed to start" unless container.ip_address
       end
 
       def start_volume(server, options = {})
-        image = build_image(server)
-        image.start_volume(options)
+        docker_host = Host.new(server)
+        image_name = prepare_build_directory { |dir| docker_host.built_image_name dir }
+        docker_host.start image_name, "/bin/true", options
       end
 
       private
@@ -57,14 +61,6 @@ module Conjure
           end
           yield dir
         end
-      end
-
-      def build_image(server)
-        docker_host = Host.new(server)
-        image_name = prepare_build_directory do |dir|
-          docker_host.built_image_name dir
-        end
-        Image.new docker_host, image_name
       end
     end
   end
