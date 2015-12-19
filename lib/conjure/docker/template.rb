@@ -31,28 +31,25 @@ module Conjure
         @commands.join "\n"
       end
 
-      def start_daemon(server, command, volumes = {}, options = {})
+      def start(server, command, options = {})
         docker_host = Host.new(server)
         image_name = prepare_build_directory { |dir| docker_host.built_image_name dir }
-        volume_containers = volumes.map do |name, path|
-          volume_template = Docker::Template.new(image_name)
-          volume_template.volume path
-          volume_template.start_volume(server, name: name)
-          name
-        end
-        options = options.merge(volume_containers: volume_containers)
-        container = docker_host.start(image_name, command, options)
-        sleep 2
-        raise "Container failed to start" unless container.ip_address
-      end
-
-      def start_volume(server, options = {})
-        docker_host = Host.new(server)
-        image_name = prepare_build_directory { |dir| docker_host.built_image_name dir }
-        docker_host.start image_name, "/bin/true", options
+        options = options.merge(volume_options(server, image_name, options)) if options[:volumes]
+        docker_host.start(image_name, command, options)
       end
 
       private
+
+      def volume_options(server, image_name, options)
+        {
+          volume_containers: options[:volumes].map do |name, path|
+            volume_template = Docker::Template.new(image_name)
+            volume_template.volume path
+            volume_template.start(server, "/bin/true", name: name)
+            name
+          end
+        }
+      end
 
       def prepare_build_directory(&block)
         Dir.mktmpdir do |dir|

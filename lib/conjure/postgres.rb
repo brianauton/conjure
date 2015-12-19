@@ -10,7 +10,7 @@ module Conjure
     end
 
     def install
-      server_template.start_daemon(@server, "/sbin/my_init", volumes, start_options)
+      server_template.start(@server, "/sbin/my_init", start_options)
     end
 
     def rails_config
@@ -34,13 +34,10 @@ module Conjure
 
     private
 
-    def volumes
-      { "postgres_data" => "/var/lib/postgresql/9.3/main" }
-    end
-
     def start_options
       {
         :name => container_name,
+        :volumes => {"postgres_data" => "/var/lib/postgresql/9.3/main"}
       }
     end
 

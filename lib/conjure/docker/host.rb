@@ -1,5 +1,3 @@
-require "conjure/docker/container"
-
 module Conjure
   module Docker
     class Host
@@ -21,11 +19,13 @@ module Conjure
       def start(image_name, daemon_command, options = {})
         container_name = options[:name]
         all_options = "#{start_options options} #{image_name} #{daemon_command}"
-        if running_container_names.include? container_name
+        if running? container_name
           puts "#{container_name} container already running."
         else
           puts "#{container_name} container not detected, starting..."
-          Container.new @server, @server.run("docker run #{all_options}").strip, container_name
+          @server.run("docker run #{all_options}").strip
+          sleep 2
+          raise "Container failed to start" unless running? container_name
         end
       end
 
@@ -66,6 +66,10 @@ module Conjure
 
       def running_container_names
         @server.run("docker ps --format='{{.Names}}'").split("\n").compact
+      end
+
+      def running?(container_name)
+        running_container_names.include? container_name
       end
     end
   end

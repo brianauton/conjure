@@ -17,7 +17,7 @@ module Conjure
     end
 
     def install
-      server_template.start_daemon(@server, "/sbin/my_init", volumes, start_options)
+      server_template.start(@server, "/sbin/my_init", start_options)
     end
 
     def pending_files
@@ -32,15 +32,12 @@ module Conjure
 
     private
 
-    def volumes
-      { "passenger_data" => "/home/app/application" }
-    end
-
     def start_options
       {
         :linked_containers => @database.container_link,
         :name => "passenger",
         :ports => {80 => 80, 443 => 443, 2222 => 22},
+        :volumes => {"passenger_data" => "/home/app/application"},
       }
     end
 
