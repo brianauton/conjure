@@ -33,12 +33,21 @@ module Conjure
 
       def start(server, command, options = {})
         docker_host = Host.new(server)
-        image_name = prepare_build_directory { |dir| docker_host.built_image_name dir }
-        options = options.merge(volume_options(server, image_name, options)) if options[:volumes]
-        docker_host.start(image_name, command, options)
+        if container_names(options).all? { |name| docker_host.running? name }
+          puts "Detected all #{options[:name]} containers running."
+        else
+          puts "Building #{options[:name]} base image..."
+          image_name = docker_host.build(image_source_files)
+          options = options.merge(volume_options(server, image_name, options)) if options[:volumes]
+          docker_host.start(image_name, command, options)
+        end
       end
 
       private
+
+      def container_names(options)
+        [options[:name]] + options[:volumes].to_h.keys
+      end
 
       def volume_options(server, image_name, options)
         {
@@ -51,13 +60,8 @@ module Conjure
         }
       end
 
-      def prepare_build_directory(&block)
-        Dir.mktmpdir do |dir|
-          @file_data.merge("Dockerfile" => source).each do |filename, data|
-            File.write "#{dir}/#{filename}", data
-          end
-          yield dir
-        end
+      def image_source_files
+        @file_data.merge "Dockerfile" => @commands.join("\n")
       end
     end
   end

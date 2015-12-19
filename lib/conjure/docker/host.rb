@@ -5,28 +5,31 @@ module Conjure
         @server = server
       end
 
-      def built_image_name(dockerfile_directory)
-        result = with_directory(dockerfile_directory) do |remote_dir|
-          @server.run "docker build #{remote_dir}"
-        end
-        if match = result.match(/Successfully built ([0-9a-z]+)/)
-          match[1]
-        else
-          raise "Failed to build Docker image, output was #{result}"
-        end
-      end
-
       def start(image_name, daemon_command, options = {})
         container_name = options[:name]
         all_options = "#{start_options options} #{image_name} #{daemon_command}"
         if running? container_name
-          puts "#{container_name} container already running."
+          puts "Detected #{container_name} container running."
         else
-          puts "#{container_name} container not detected, starting..."
+          puts "Starting #{container_name} container..."
           @server.run("docker run #{all_options}").strip
           sleep 2
           raise "Container failed to start" unless running? container_name
         end
+      end
+
+      def build(image_source_files)
+        Dir.mktmpdir do |dir|
+          image_source_files.each { |filename, data| File.write "#{dir}/#{filename}", data }
+          result = with_directory(dir) { |remote_dir| @server.run "docker build #{remote_dir}" }
+          match = result.match(/Successfully built ([0-9a-z]+)/)
+          raise "Failed to build Docker image, output was #{result}" unless match
+          match[1]
+        end
+      end
+
+      def running?(container_name)
+        running_container_names.include? container_name
       end
 
       private
@@ -66,10 +69,6 @@ module Conjure
 
       def running_container_names
         @server.run("docker ps --format='{{.Names}}'").split("\n").compact
-      end
-
-      def running?(container_name)
-        running_container_names.include? container_name
       end
     end
   end
