@@ -1,8 +1,6 @@
-require "conjure/docker/template"
+require "conjure/rails_application"
 require "conjure/server"
 require "conjure/swap"
-require "conjure/postgres"
-require "conjure/passenger"
 require "yaml"
 
 module Conjure
@@ -46,8 +44,7 @@ module Conjure
     def components
       @components ||= [
         Swap.new(@server),
-        database = Postgres.new(@server),
-        Passenger.new(@server, @options.merge(database: database)),
+        RailsApplication.new(@server, @options),
       ]
     end
   end
