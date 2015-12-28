@@ -31,15 +31,14 @@ module Conjure
         @commands.join "\n"
       end
 
-      def start(server, command, options = {})
-        docker_host = Host.new(server)
-        if container_names(options).all? { |name| docker_host.running? name }
+      def start(container_host, command, options = {})
+        if container_names(options).all? { |name| container_host.running? name }
           puts "Detected all #{options[:name]} containers running."
         else
           puts "Building #{options[:name]} base image..."
-          image_name = docker_host.build(image_source_files)
-          options = options.merge(volume_options(server, image_name, options)) if options[:volumes]
-          docker_host.start(image_name, command, options)
+          image_name = container_host.build(image_source_files)
+          options = options.merge(volume_options(container_host, image_name, options)) if options[:volumes]
+          container_host.start(image_name, command, options)
         end
       end
 
@@ -49,12 +48,12 @@ module Conjure
         [options[:name]] + options[:volumes].to_h.keys
       end
 
-      def volume_options(server, image_name, options)
+      def volume_options(container_host, image_name, options)
         {
           volume_containers: options[:volumes].map do |name, path|
             volume_template = Docker::Template.new(image_name)
             volume_template.volume path
-            volume_template.start(server, "/bin/true", name: name)
+            volume_template.start(container_host, "/bin/true", name: name)
             name
           end
         }

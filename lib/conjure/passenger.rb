@@ -4,8 +4,8 @@ require "securerandom"
 
 module Conjure
   class Passenger
-    def initialize(server, options)
-      @server = server
+    def initialize(container_host, options)
+      @container_host = container_host
       @database = options[:database]
       @rails_env = options[:rails_env]
       @max_upload_mb = options[:max_upload_mb] || 20
@@ -17,7 +17,7 @@ module Conjure
     end
 
     def install
-      server_template.start(@server, "/sbin/my_init", start_options)
+      server_template.start(@container_host, "/sbin/my_init", start_options)
     end
 
     def pending_files

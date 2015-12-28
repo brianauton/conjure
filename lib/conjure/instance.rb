@@ -1,3 +1,4 @@
+require "conjure/docker/host"
 require "conjure/rails_application"
 require "conjure/server"
 require "conjure/swap"
@@ -44,7 +45,7 @@ module Conjure
     def components
       @components ||= [
         Swap.new(@server),
-        RailsApplication.new(@server, @options),
+        RailsApplication.new(Docker::Host.new(@server), @options),
       ]
     end
   end

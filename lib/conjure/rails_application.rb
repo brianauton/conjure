@@ -3,8 +3,8 @@ require "conjure/passenger"
 
 module Conjure
   class RailsApplication
-    def initialize(server, options)
-      @server = server
+    def initialize(container_host, options)
+      @container_host = container_host
       @options = options
     end
 
@@ -20,8 +20,8 @@ module Conjure
 
     def components
       [
-        database = Postgres.new(@server),
-        Passenger.new(@server, @options.merge(database: database)),
+        database = Postgres.new(@container_host),
+        Passenger.new(@container_host, @options.merge(database: database)),
       ]
     end
   end
