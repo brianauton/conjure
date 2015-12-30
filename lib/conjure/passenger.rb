@@ -14,6 +14,9 @@ module Conjure
       @rubygems_version = options[:rubygems_version]
       @use_ssl = !!options[:ssl_hostname]
       @ssl_hostname = options[:ssl_hostname] || "unknown"
+
+      @services = options[:services] || []
+      @system_packages += @services.flat_map(&:system_packages)
     end
 
     def install
@@ -66,6 +69,7 @@ module Conjure
       file.run "ln -s /etc/nginx/sites-available/#{which_config}.conf /etc/nginx/sites-enabled/application.conf"
       file.add_file_data database_yml, "/home/app/application/shared/config/database.yml"
       file.add_file_data secrets_yml, "/home/app/application/shared/config/secrets.yml"
+      @services.each { |service| service.apply(file) }
       file
     end
 

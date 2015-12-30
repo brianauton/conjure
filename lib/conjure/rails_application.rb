@@ -1,3 +1,4 @@
+require "conjure/delayed_job"
 require "conjure/postgres"
 require "conjure/passenger"
 
@@ -21,7 +22,10 @@ module Conjure
     def components
       [
         database = Postgres.new(@container_host),
-        Passenger.new(@container_host, @options.merge(database: database)),
+        Passenger.new(@container_host, @options.merge(
+          database: database,
+          services: [DelayedJob.new(@options)],
+        )),
       ]
     end
   end
