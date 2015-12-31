@@ -31,6 +31,10 @@ module Conjure
         @commands.join "\n"
       end
 
+      def environment(hash)
+        hash.each { |key, value| @commands << "ENV #{key} #{value}" }
+      end
+
       def start(container_host, command, options = {})
         if container_names(options).all? { |name| container_host.running? name }
           puts "Detected all #{options[:name]} containers running."

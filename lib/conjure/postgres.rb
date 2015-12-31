@@ -46,7 +46,13 @@ module Conjure
     end
 
     def server_template
-      file = Docker::Template.new("conjure/postgres93:1.0.0")
+      file = Docker::Template.new("atbaker/sd-postgres")
+      file.run "useradd db"
+      file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -h localhost -c 'CREATE USER db CREATEDB'\""
+      file.run "/sbin/my_init -- /sbin/setuser db sh -c \"sleep 1; createdb db\""
+      file.run "echo 'local all all  ident' >/usr/local/pgsql/data/pg_hba.conf"
+      file.run "echo 'host all all 0.0.0.0/0 md5' >>/usr/local/pgsql/data/pg_hba.conf"
+      file.run "echo 'host all all ::1/128 md5' >>/usr/local/pgsql/data/pg_hba.conf"
       file.run "echo \"ALTER USER db PASSWORD '#{@password}'\" >/tmp/setpass"
       file.run "/sbin/my_init -- /sbin/setuser postgres sh -c \"sleep 1; psql -f /tmp/setpass\""
       file.run "rm /tmp/setpass"

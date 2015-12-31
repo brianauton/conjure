@@ -14,8 +14,9 @@ module Conjure
       @rubygems_version = options[:rubygems_version]
       @use_ssl = !!options[:ssl_hostname]
       @ssl_hostname = options[:ssl_hostname] || "unknown"
-
       @services = options[:services] || []
+      @system_packages += ["libsqlite3-dev", "libpq-dev"]
+      @system_packages += ["libruby#{@ruby_version}", "ruby#{@ruby_version}"]
       @system_packages += @services.flat_map(&:system_packages)
     end
 
@@ -46,10 +47,10 @@ module Conjure
 
     def base_docker_image
       {
-        "2.2" => "conjure/passenger-ruby22:1.0.1",
-        "2.1" => "conjure/passenger-ruby21:1.0.1",
-        "2.0" => "conjure/passenger-ruby20:1.0.1",
-        "1.9" => "conjure/passenger-ruby19:1.0.1",
+        "2.2" => "phusion/passenger-ruby22:0.9.15",
+        "2.1" => "phusion/passenger-ruby21:0.9.15",
+        "2.0" => "phusion/passenger-ruby20:0.9.15",
+        "1.9" => "phusion/passenger-ruby19:0.9.15",
       }[@ruby_version] || raise("Unsupported ruby version #{@ruby_version.inspect}")
     end
 
@@ -57,8 +58,15 @@ module Conjure
       public_key = File.expand_path("~/.ssh/id_rsa.pub")
       raise "Error: ~/.ssh/id_rsa.pub must exist." unless File.exist?(public_key)
       file = Docker::Template.new(base_docker_image)
+      file.environment HOME: "/root"
+      file.run "rm -f /etc/service/nginx/down /etc/nginx/sites-enabled/default"
+      file.run "mkdir -p /home/app/application/shared/bundle/ruby/1.9.0/bin"
+      file.run "chown -R app /home/app/application && chmod -R 755 /home/app/application"
+      file.run "ln -s /usr/bin/node /home/app/application/shared/bundle/ruby/1.9.0/bin/node"
       file.run apt_command if apt_command
       file.run rubygems_command if rubygems_command
+      file.run "passwd -u app"
+      file.run "rm -f /etc/service/sshd/down"
       file.add_file public_key, "/root/.ssh/authorized_keys"
       file.add_file public_key, "/home/app/.ssh/authorized_keys"
       file.run "chown app.app /home/app/.ssh/authorized_keys"
