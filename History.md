@@ -3,6 +3,7 @@
 * API change: remove Provision namespace
 * API change: new Instance syntax to support updating existing Instances
 * API change: remove nginx_directives option and add max_upload_mb
+* Upgrade to Passenger base images v0.9.18
 
 ### Version 0.2.10
 2015-06-24

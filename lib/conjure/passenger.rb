@@ -47,10 +47,10 @@ module Conjure
 
     def base_docker_image
       {
-        "2.2" => "phusion/passenger-ruby22:0.9.15",
-        "2.1" => "phusion/passenger-ruby21:0.9.15",
-        "2.0" => "phusion/passenger-ruby20:0.9.15",
-        "1.9" => "phusion/passenger-ruby19:0.9.15",
+        "2.2" => "phusion/passenger-ruby22:0.9.18",
+        "2.1" => "phusion/passenger-ruby21:0.9.18",
+        "2.0" => "phusion/passenger-ruby20:0.9.18",
+        "1.9" => "phusion/passenger-ruby19:0.9.18",
       }[@ruby_version] || raise("Unsupported ruby version #{@ruby_version.inspect}")
     end
 
