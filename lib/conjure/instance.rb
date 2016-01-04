@@ -16,6 +16,11 @@ module Conjure
       new(@server.ip_address, options).tap(&:update)
     end
 
+    def self.update(options)
+      ip_address = options.delete(:ip_address)
+      new(ip_address, options).tap(&:update)
+    end
+
     def update
       components.each(&:install)
     end
