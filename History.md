@@ -1,8 +1,9 @@
-### Unreleased
+### Version 0.3.0
+2016-01-04
 
-* API change: remove Provision namespace
-* API change: new Instance syntax to support updating existing Instances
-* API change: remove nginx_directives option and add max_upload_mb
+* Remove command-line app in favor of the provisioning API
+* Revise API with support for updating existing Instances
+* Monitor and restart background workers for deployed apps using DelayedJob
 * Upgrade to Passenger base images v0.9.18
 
 ### Version 0.2.10
