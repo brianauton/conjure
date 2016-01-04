@@ -7,7 +7,7 @@ module Conjure
     def initialize(container_host, options)
       @container_host = container_host
       @database = options[:database]
-      @rails_env = options[:rails_env]
+      @rails_env = options[:rails_env] || "staging"
       @max_upload_mb = options[:max_upload_mb] || 20
       @system_packages = options[:system_packages] || []
       @ruby_version = options[:ruby_version] || "2.2"
