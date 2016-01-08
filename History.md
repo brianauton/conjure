@@ -1,3 +1,9 @@
+### Version 0.3.1
+2016-01-08
+
+* Firewall all nonessential ports when creating cloud server instances
+* Set up log rotation for deployed apps
+
 ### Version 0.3.0
 2016-01-04
 
